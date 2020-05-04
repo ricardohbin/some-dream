@@ -59,7 +59,7 @@ impl SomeDreamApplication {
         let ask_confirmation: bool = after_input_phrase != "";
 
         println!("{}", before_input_phrase);
-        println!("{:?}", options);
+
         if options.len() > 0 {
             let nice_options = options.join(" | ");
             println!("Options: {}", nice_options)
