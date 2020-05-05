@@ -1,11 +1,16 @@
 use text_io::read;
+use rand::Rng;
+use rand::rngs::ThreadRng;
 
+
+#[derive(Debug)]
 struct Player {
     name: String,
     profession: Profession,
     attributes: Attributes
 }
 
+#[derive(Debug)]
 struct Attributes {
     strength: i8,
     agility: i8,
@@ -17,6 +22,7 @@ struct Attributes {
     resistence: i8
 }
 
+#[derive(Debug)]
 enum Profession {
     FIGHTER,
     MAGE,
@@ -25,17 +31,223 @@ enum Profession {
     UNKOWN
 }
 
+enum AttributesRanges {
+    HIGH,
+    MEDIUM,
+    POOR,
+    HORRIBLE
+}
+
 struct SomeDreamApplication {
-    
+    rng: ThreadRng
 }
 
 impl SomeDreamApplication {
-    pub fn initialize() -> Self {
-        Self {}
+    pub fn initialize(rng: ThreadRng) -> Self {
+        Self {
+            rng: rng
+        }
+    }
+
+    fn get_attributes(&mut self, ranges: AttributesRanges) -> i8 {
+        match ranges {
+            AttributesRanges::HIGH => self.rng.gen_range(6, 9),
+            AttributesRanges::MEDIUM => self.rng.gen_range(4, 7),
+            AttributesRanges::POOR => self.rng.gen_range(2, 5),
+            AttributesRanges::HORRIBLE => self.rng.gen_range(0, 3)
+        }
+    }
+
+    fn roll_status(&mut self, value: String) -> Attributes {
+        match value.to_uppercase().as_str() {
+            "KNIGHT" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::HIGH),
+                    agility: self.get_attributes(AttributesRanges::HORRIBLE),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "WARRIOR" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::HIGH),
+                    agility: self.get_attributes(AttributesRanges::HORRIBLE),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            "NOBLE" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::HORRIBLE),
+                    agility: self.get_attributes(AttributesRanges::HIGH),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "ROGUE" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::HORRIBLE),
+                    agility: self.get_attributes(AttributesRanges::HIGH),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            "MAGE" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::HIGH),
+                    will: self.get_attributes(AttributesRanges::HORRIBLE),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "CLERIC" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::HORRIBLE),
+                    will: self.get_attributes(AttributesRanges::HIGH),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "WITCH_DOCTOR" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::HIGH),
+                    will: self.get_attributes(AttributesRanges::HORRIBLE),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "BARD" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::HIGH),
+                    intimidation: self.get_attributes(AttributesRanges::HORRIBLE),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            "TEMPLAR" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::HIGH),
+                    intimidation: self.get_attributes(AttributesRanges::HORRIBLE),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            "ASSASSIN" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::HORRIBLE),
+                    intimidation: self.get_attributes(AttributesRanges::HIGH),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            "EXECUTIONER" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::HORRIBLE),
+                    intimidation: self.get_attributes(AttributesRanges::HIGH),
+                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
+                    resistence: self.get_attributes(AttributesRanges::POOR)
+                }
+            },
+            "HUNTER" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::HIGH),
+                    resistence: self.get_attributes(AttributesRanges::HORRIBLE)
+                }
+            },
+            "DRUID" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::HIGH),
+                    resistence: self.get_attributes(AttributesRanges::HORRIBLE)
+                }
+            },
+            "BARBARIAN" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::POOR),
+                    will: self.get_attributes(AttributesRanges::MEDIUM),
+                    charisma: self.get_attributes(AttributesRanges::POOR),
+                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
+                    wealth: self.get_attributes(AttributesRanges::HORRIBLE),
+                    resistence: self.get_attributes(AttributesRanges::HIGH)
+                }
+            },
+            "SHAMAN" => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::POOR),
+                    agility: self.get_attributes(AttributesRanges::MEDIUM),
+                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
+                    will: self.get_attributes(AttributesRanges::POOR),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::HORRIBLE),
+                    resistence: self.get_attributes(AttributesRanges::HIGH)
+                }
+            }
+            _ => {
+                panic!("Unknow role. Panic!")
+            }
+        }
     }
 
     fn retrieve_profession(&mut self, value: String) -> Profession {
-        return match value.to_uppercase().as_str() {
+        match value.to_uppercase().as_str() {
             "FIGHTER" => Profession::FIGHTER,
             "MAGE" => Profession::MAGE,
             "SURVIVOR" => Profession::SURVIVOR,
@@ -58,16 +270,18 @@ impl SomeDreamApplication {
 
         let ask_confirmation: bool = after_input_phrase != "";
 
+        let has_options: bool = options.len() > 0;
+
         println!("{}", before_input_phrase);
 
-        if options.len() > 0 {
+        if has_options {
             let nice_options = options.join(" | ");
             println!("Options: {}", nice_options)
         }
 
         let value: String = read!();
 
-        if options.len() > 0 && !options.contains(&value.to_uppercase()) {
+        if has_options && !options.contains(&value.to_uppercase()) {
             println!("Your option {} doesn't exists in the list {:?}. try again.", value, options);
             return self.capture_input(
                 before_input_phrase,
@@ -144,8 +358,6 @@ impl SomeDreamApplication {
             _ => {}
         }
 
-        let mut attributes: Vec<i8> = vec!();
-
         {
             let mut attributes_options: Vec<String> = vec!();
             let mut profile_suggestions: Vec<String> = vec!();
@@ -179,48 +391,64 @@ impl SomeDreamApplication {
 
             match profiles.to_uppercase().as_str() {
                 "STRENGTH" => {
-                    profile_suggestions.push(String::from("KNIGHT")); // ++str, int, cha, cons
-                    profile_suggestions.push(String::from("WARRIOR")); // ++str, will, inti, res
+                    profile_suggestions.push(String::from("KNIGHT"));
+                    profile_suggestions.push(String::from("WARRIOR"));
                 },
                 "AGILITY" => {
-                    profile_suggestions.push(String::from("NOBLE")); // ++agi, int, cha, cons
-                    profile_suggestions.push(String::from("ROGUE")); // ++agi, will, inti, res
+                    profile_suggestions.push(String::from("NOBLE"));
+                    profile_suggestions.push(String::from("ROGUE"));
                 },
                 "INTELLIGENCE" => {
-                    profile_suggestions.push(String::from("MAGE")); // ++int, agi, cha, cons
-                    profile_suggestions.push(String::from("WARLOCK")); // ++int, str, inti, res
+                    profile_suggestions.push(String::from("MAGE"));
+                    profile_suggestions.push(String::from("WARLOCK"));
                 },
                 "WILLPOWER" => {
-                    profile_suggestions.push(String::from("CLERIC"));  //++will, str, cha, cons
-                    profile_suggestions.push(String::from("WITCH_DOCTOR")); //++will, agi, inti, res
+                    profile_suggestions.push(String::from("CLERIC"));
+                    profile_suggestions.push(String::from("WITCH_DOCTOR"));
                 },
                 "CHARISMA" => {
-                    profile_suggestions.push(String::from("BARD")); //++cha, agi, res, int
-                    profile_suggestions.push(String::from("TEMPLAR")); //++cha, str, cons, will
+                    profile_suggestions.push(String::from("BARD"));
+                    profile_suggestions.push(String::from("TEMPLAR"));
                 },
                 "INTIMIDATION" => {
-                    profile_suggestions.push(String::from("ASSASSIN")); //++inti, agi, res, int
-                    profile_suggestions.push(String::from("BERSERKER")); //++inti, str, cons, will
+                    profile_suggestions.push(String::from("ASSASSIN"));
+                    profile_suggestions.push(String::from("BERSERKER"));
                 },
                 "CONSTITUTION" => {
-                    profile_suggestions.push(String::from("TANK")); //++cons, str, cha, int
-                    profile_suggestions.push(String::from("EXECUTIONER")); //++cons, agi, inti, will
+                    profile_suggestions.push(String::from("HUNTER"));
+                    profile_suggestions.push(String::from("DRUID"));
                 },
                 "RESISTENCE" => {
-                    profile_suggestions.push(String::from("BARBARIAN")); //++res, str, will, inti
-                    profile_suggestions.push(String::from("RANGER")); //++res, agi, cha, int
+                    profile_suggestions.push(String::from("BARBARIAN"));
+                    profile_suggestions.push(String::from("SHAMAN"));
                 },
                 _ => {
                     panic!("What attribute was missing? {}", profiles);
                 }
             }
-            
 
             let profile: String = self.capture_input(
-                "You choose a nice profile",
+                "You choose a nice profile. And now, which profile you want? This is the last step of this onboarding",
                 "Are you sure?",
                 "Ok, let's roll the stats",
                 profile_suggestions,
+            );
+
+            let attributes: Attributes = self.roll_status(profile);
+
+            let player = Player {
+                name: name,
+                profession: profession,
+                attributes: attributes
+            };
+
+            println!("{:?}", player);
+
+            self.capture_input(
+                "Your status is done",
+                "Let's begin the adventure?",
+                "Very well",
+                vec!(),
             );
         }
 
@@ -228,6 +456,6 @@ impl SomeDreamApplication {
 }
 
 fn main() {
-    let mut app = SomeDreamApplication::initialize();
+    let mut app = SomeDreamApplication::initialize(rand::thread_rng());
     app.main_loop();
 }
