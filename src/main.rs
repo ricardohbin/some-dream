@@ -180,7 +180,7 @@ impl SomeDreamApplication {
             match profiles.to_uppercase().as_str() {
                 "STRENGTH" => {
                     profile_suggestions.push(String::from("KNIGHT")); // ++str, int, cha, cons
-                    profile_suggestions.push(String::from("BARBARIAN")); // ++str, will, inti, res
+                    profile_suggestions.push(String::from("WARRIOR")); // ++str, will, inti, res
                 },
                 "AGILITY" => {
                     profile_suggestions.push(String::from("NOBLE")); // ++agi, int, cha, cons
