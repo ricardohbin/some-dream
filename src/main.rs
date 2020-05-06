@@ -265,7 +265,7 @@ impl SomeDreamApplication {
         }
     }
 
-    fn retrieve_role_and_vital_points(&mut self, value: String) -> Role {
+    fn retrieve_role(&mut self, value: String) -> Role {
         match value.to_uppercase().as_str() {
             "FIGHTER" => Role::FIGHTER,
             "MAGE" => Role::MAGE,
@@ -368,7 +368,7 @@ impl SomeDreamApplication {
             roles,
         );
 
-        let role: Role = self.retrieve_role_and_vital_points(main_role);
+        let role: Role = self.retrieve_role(main_role);
 
         let mut attributes_options: Vec<String> = vec!();
         let mut profile_suggestions: Vec<String> = vec!();
