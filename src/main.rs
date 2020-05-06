@@ -2,12 +2,14 @@ use text_io::read;
 use rand::Rng;
 use rand::rngs::ThreadRng;
 
+mod render;
 
 #[derive(Debug)]
-struct Player {
+pub struct Player {
     name: String,
-    profession: Profession,
-    attributes: Attributes
+    role: Role,
+    attributes: Attributes,
+    vital_points: VitalPoints
 }
 
 #[derive(Debug)]
@@ -19,11 +21,19 @@ struct Attributes {
     charisma: i8,
     intimidation: i8,
     wealth: i8,
-    resistence: i8
+    resistence: i8,
 }
 
 #[derive(Debug)]
-enum Profession {
+pub struct VitalPoints {
+    life: i8,
+    luck: i8,
+    cardio: i8,
+    social: i8,
+}
+
+#[derive(Debug)]
+enum Role {
     FIGHTER,
     MAGE,
     SURVIVOR,
@@ -54,7 +64,16 @@ impl SomeDreamApplication {
             AttributesRanges::HIGH => self.rng.gen_range(6, 9),
             AttributesRanges::MEDIUM => self.rng.gen_range(4, 7),
             AttributesRanges::POOR => self.rng.gen_range(2, 5),
-            AttributesRanges::HORRIBLE => self.rng.gen_range(0, 3)
+            AttributesRanges::HORRIBLE => self.rng.gen_range(0, 3),
+        }
+    }
+
+    fn calculate_vital_points(&mut self, attributes: &Attributes) -> VitalPoints {
+        VitalPoints{
+            life: attributes.wealth + attributes.strength,
+            luck: attributes.agility + attributes.intimidation,
+            cardio: attributes.resistence + attributes.will,
+            social: attributes.charisma + attributes.intelligence,
         }
     }
 
@@ -246,13 +265,13 @@ impl SomeDreamApplication {
         }
     }
 
-    fn retrieve_profession(&mut self, value: String) -> Profession {
+    fn retrieve_role_and_vital_points(&mut self, value: String) -> Role {
         match value.to_uppercase().as_str() {
-            "FIGHTER" => Profession::FIGHTER,
-            "MAGE" => Profession::MAGE,
-            "SURVIVOR" => Profession::SURVIVOR,
-            "HYPNO" => Profession::HYPNO,
-            _ => Profession::UNKOWN
+            "FIGHTER" => Role::FIGHTER,
+            "MAGE" => Role::MAGE,
+            "SURVIVOR" => Role::SURVIVOR,
+            "HYPNO" => Role::HYPNO,
+            _ => Role::UNKOWN,
         }
     }
 
@@ -327,7 +346,7 @@ impl SomeDreamApplication {
         return self.ask();
     }
 
-    fn main_loop(&mut self) {
+    fn onboarding(&mut self) -> Player {
         let name: String = self.capture_input(
             "Hello! Welcome to awesome world of some dream. Tell me your name!",
             "Very well. Your name is correct?",
@@ -335,123 +354,127 @@ impl SomeDreamApplication {
             vec!(),
         );
 
-        let professions: Vec<String> = vec!(
+        let roles: Vec<String> = vec!(
             String::from("FIGHTER"),
             String::from("MAGE"),
             String::from("SURVIVOR"),
             String::from("HYPNO"),
         );
 
-        let profession_opt: String = self.capture_input(
+        let main_role: String = self.capture_input(
             "Okay, now I want to know what will be your job here",
             "You want to proceed with this info?",
             "",
-            professions,
+            roles,
         );
 
-        let profession: Profession = self.retrieve_profession(profession_opt);
+        let role: Role = self.retrieve_role_and_vital_points(main_role);
 
-        match profession {
-            Profession::UNKOWN => {
-                panic!("Unknow profession. Panic!")
+        let mut attributes_options: Vec<String> = vec!();
+        let mut profile_suggestions: Vec<String> = vec!();
+
+        
+
+        match role {
+            Role::FIGHTER => {
+                attributes_options.push(String::from("STRENGTH"));
+                attributes_options.push(String::from("AGILITY"));
             },
-            _ => {}
+            Role::MAGE => {
+                attributes_options.push(String::from("INTELLIGENCE"));
+                attributes_options.push(String::from("WILLPOWER"));
+            },
+            Role::HYPNO => {
+                attributes_options.push(String::from("CHARISMA"));
+                attributes_options.push(String::from("INTIMIDATION"));
+            },
+            Role::SURVIVOR => {
+                attributes_options.push(String::from("CONSTITUTION"));
+                attributes_options.push(String::from("RESISTENCE"));
+            },
+            Role::UNKOWN => panic!("Unknow role. Panic!")
         }
 
-        {
-            let mut attributes_options: Vec<String> = vec!();
-            let mut profile_suggestions: Vec<String> = vec!();
+        let profiles: String = self.capture_input(
+            "Okay, now I want to know what will be your primary attribute, then I will ask you some profiles based on it",
+            "Are you sure?",
+            "",
+            attributes_options,
+        );
 
-            match profession {
-                Profession::FIGHTER => {
-                    attributes_options.push(String::from("STRENGTH"));
-                    attributes_options.push(String::from("AGILITY"));
-                },
-                Profession::MAGE => {
-                    attributes_options.push(String::from("INTELLIGENCE"));
-                    attributes_options.push(String::from("WILLPOWER"));
-                },
-                Profession::HYPNO => {
-                    attributes_options.push(String::from("CHARISMA"));
-                    attributes_options.push(String::from("INTIMIDATION"));
-                },
-                Profession::SURVIVOR => {
-                    attributes_options.push(String::from("CONSTITUTION"));
-                    attributes_options.push(String::from("RESISTENCE"));
-                },
-                _ => {}
-            }
-
-            let profiles: String = self.capture_input(
-                "Okay, now I want to know what will be your primary attribute, then I will ask you some profiles based on it",
-                "Are you sure?",
-                "",
-                attributes_options,
-            );
-
-            match profiles.to_uppercase().as_str() {
-                "STRENGTH" => {
-                    profile_suggestions.push(String::from("KNIGHT"));
-                    profile_suggestions.push(String::from("WARRIOR"));
-                },
-                "AGILITY" => {
-                    profile_suggestions.push(String::from("NOBLE"));
-                    profile_suggestions.push(String::from("ROGUE"));
-                },
-                "INTELLIGENCE" => {
-                    profile_suggestions.push(String::from("MAGE"));
-                    profile_suggestions.push(String::from("WARLOCK"));
-                },
-                "WILLPOWER" => {
-                    profile_suggestions.push(String::from("CLERIC"));
-                    profile_suggestions.push(String::from("WITCH_DOCTOR"));
-                },
-                "CHARISMA" => {
-                    profile_suggestions.push(String::from("BARD"));
-                    profile_suggestions.push(String::from("TEMPLAR"));
-                },
-                "INTIMIDATION" => {
-                    profile_suggestions.push(String::from("ASSASSIN"));
-                    profile_suggestions.push(String::from("BERSERKER"));
-                },
-                "CONSTITUTION" => {
-                    profile_suggestions.push(String::from("HUNTER"));
-                    profile_suggestions.push(String::from("DRUID"));
-                },
-                "RESISTENCE" => {
-                    profile_suggestions.push(String::from("BARBARIAN"));
-                    profile_suggestions.push(String::from("SHAMAN"));
-                },
-                _ => {
-                    panic!("What attribute was missing? {}", profiles);
-                }
-            }
-
-            let profile: String = self.capture_input(
-                "You choose a nice profile. And now, which profile you want? This is the last step of this onboarding",
-                "Are you sure?",
-                "Ok, let's roll the stats",
-                profile_suggestions,
-            );
-
-            let attributes: Attributes = self.roll_status(profile);
-
-            let player = Player {
-                name: name,
-                profession: profession,
-                attributes: attributes
-            };
-
-            println!("{:?}", player);
-
-            self.capture_input(
-                "Your status is done",
-                "Let's begin the adventure?",
-                "Very well",
-                vec!(),
-            );
+        match profiles.to_uppercase().as_str() {
+            "STRENGTH" => {
+                profile_suggestions.push(String::from("KNIGHT"));
+                profile_suggestions.push(String::from("WARRIOR"));
+            },
+            "AGILITY" => {
+                profile_suggestions.push(String::from("NOBLE"));
+                profile_suggestions.push(String::from("ROGUE"));
+            },
+            "INTELLIGENCE" => {
+                profile_suggestions.push(String::from("MAGE"));
+                profile_suggestions.push(String::from("WARLOCK"));
+            },
+            "WILLPOWER" => {
+                profile_suggestions.push(String::from("CLERIC"));
+                profile_suggestions.push(String::from("WITCH_DOCTOR"));
+            },
+            "CHARISMA" => {
+                profile_suggestions.push(String::from("BARD"));
+                profile_suggestions.push(String::from("TEMPLAR"));
+            },
+            "INTIMIDATION" => {
+                profile_suggestions.push(String::from("ASSASSIN"));
+                profile_suggestions.push(String::from("BERSERKER"));
+            },
+            "CONSTITUTION" => {
+                profile_suggestions.push(String::from("HUNTER"));
+                profile_suggestions.push(String::from("DRUID"));
+            },
+            "RESISTENCE" => {
+                profile_suggestions.push(String::from("BARBARIAN"));
+                profile_suggestions.push(String::from("SHAMAN"));
+            },
+            _ => panic!("What attribute was missing? {}", profiles)
         }
 
+        let profile: String = self.capture_input(
+            "You choose a nice profile. And now, which profile you want? This is the last step of this onboarding",
+            "Are you sure?",
+            "Ok, let's roll the stats",
+            profile_suggestions,
+        );
+
+        let attributes: Attributes = self.roll_status(profile);
+
+        let vital_points: VitalPoints = self.calculate_vital_points(&attributes);
+
+        let player = Player {
+            name: name,
+            role: role,
+            attributes: attributes,
+            vital_points: vital_points,
+        };
+
+        render::render_attributes(&player);
+
+        let final_confirmation = self.capture_input(
+            "Confirm everything? Let's begin?",
+            "",
+            "Nice!",
+            vec!(String::from("YES"), String::from("NO")),
+        );
+
+        if final_confirmation == "YES" {
+            return player;
+        }
+
+        println!("Ok! Let's do it again");
+        return self.onboarding();
+    }
+
+    fn main_loop(&mut self) {
+        let player: Player = self.onboarding();
     }
 }
 

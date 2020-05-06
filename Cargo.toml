@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 text_io = "*"
 rand = "*"
+console = "*"
