@@ -55,7 +55,7 @@ struct SomeDreamApplication {
 impl SomeDreamApplication {
     pub fn initialize(rng: ThreadRng) -> Self {
         Self {
-            rng: rng
+            rng
         }
     }
 
@@ -284,12 +284,12 @@ impl SomeDreamApplication {
     ) -> String {
         fn give_feedback(phrase: &str, value: String) -> String {
             println!("{}{}", phrase, value);
-            return value;
+            value
         }
 
         let ask_confirmation: bool = after_input_phrase != "";
 
-        let has_options: bool = options.len() > 0;
+        let has_options: bool = !options.is_empty();
 
         println!("{}", before_input_phrase);
 
@@ -332,7 +332,7 @@ impl SomeDreamApplication {
             }
         }
 
-        return give_feedback(success_input_phrase, value);
+        give_feedback(success_input_phrase, value)
     }
 
     fn ask(&mut self) -> bool {
@@ -343,7 +343,7 @@ impl SomeDreamApplication {
             return false;
         }
         println!("Wrong option. Try again. The options are [Y/N]");
-        return self.ask();
+        self.ask()
     }
 
     fn onboarding(&mut self) -> Player {
@@ -450,10 +450,10 @@ impl SomeDreamApplication {
         let vital_points: VitalPoints = self.calculate_vital_points(&attributes);
 
         let player = Player {
-            name: name,
-            role: role,
-            attributes: attributes,
-            vital_points: vital_points,
+            name,
+            role,
+            attributes,
+            vital_points,
         };
 
         render::render_attributes(&player);
@@ -470,11 +470,11 @@ impl SomeDreamApplication {
         }
 
         println!("Ok! Let's do it again");
-        return self.onboarding();
+        self.onboarding()
     }
 
     fn main_loop(&mut self) {
-        let player: Player = self.onboarding();
+        let _player: Player = self.onboarding();
     }
 }
 
