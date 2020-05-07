@@ -1,7 +1,5 @@
-use text_io::read;
 use rand::Rng;
 use rand::rngs::ThreadRng;
-use strum;
 
 use strum_macros::{EnumString, Display};
 // used implictly by strum...
@@ -9,6 +7,7 @@ use std::str::FromStr;
 use std::string::ToString;
 
 mod render;
+mod interaction;
 
 #[derive(Debug)]
 pub struct Player {
@@ -307,79 +306,8 @@ impl SomeDreamApplication {
         }
     }
 
-    fn capture_input(
-        &mut self,
-        before_input_phrase: &str,
-        after_input_phrase: &str,
-        success_input_phrase: &str,
-        options: std::vec::Vec<String>
-    ) -> String {
-        fn give_feedback(phrase: &str, value: String) -> String {
-            println!("{}{}", phrase, value);
-            value
-        }
-
-        let ask_confirmation: bool = after_input_phrase != "";
-
-        let has_options: bool = !options.is_empty();
-
-        println!("{}", before_input_phrase);
-
-        if has_options {
-            let nice_options = options.join(" | ");
-            println!("Options: {}", nice_options)
-        }
-
-        let value: String = read!();
-
-        if has_options && !options.contains(&value) {
-            println!("Your option {} doesn't exists in the list {:?}. try again.", value, options);
-            return self.capture_input(
-                before_input_phrase,
-                after_input_phrase,
-                success_input_phrase,
-                options
-            )
-        }
-
-        if after_input_phrase != "" {
-            let mut after_input_phrase_with_confirmation: String = after_input_phrase.to_owned();
-            if ask_confirmation {
-                after_input_phrase_with_confirmation = format!("{} - {}", after_input_phrase_with_confirmation, "[Y/N]")
-            }
-            println!("{}", after_input_phrase_with_confirmation);
-        }
-
-        if ask_confirmation {
-            if self.ask() {
-                return give_feedback(success_input_phrase, value);
-            } else {
-                println!("Ok! Let's try again,");
-                return self.capture_input(
-                    before_input_phrase,
-                    after_input_phrase,
-                    success_input_phrase,
-                    options
-                )
-            }
-        }
-
-        give_feedback(success_input_phrase, value)
-    }
-
-    fn ask(&mut self) -> bool {
-        let option: String = read!();
-        if option == "Y" {
-            return true;
-        } else if option == "N" {
-            return false;
-        }
-        println!("Wrong option. Try again. The options are [Y/N]");
-        self.ask()
-    }
-
     fn onboarding(&mut self) -> Player {
-        let name: String = self.capture_input(
+        let name: String = interaction::capture_input(
             "Hello! Welcome to awesome world of some dream. Tell me your name!",
             "Very well. Your name is correct?",
             "Nice to meet you!",
@@ -393,7 +321,7 @@ impl SomeDreamApplication {
             Role::Hypno.to_string(),
         );
 
-        let main_role: String = self.capture_input(
+        let main_role: String = interaction::capture_input(
             "Okay, now I want to know what will be your job here",
             "You want to proceed with this info?",
             "",
@@ -425,7 +353,7 @@ impl SomeDreamApplication {
             },
         }
 
-        let profiles: String = self.capture_input(
+        let profiles: String = interaction::capture_input(
             "Okay, now I want to know what will be your primary attribute, then I will ask you some profiles based on it",
             "Are you sure?",
             "",
@@ -468,7 +396,7 @@ impl SomeDreamApplication {
             _ => panic!("What attribute was missing? {}", profiles)
         }
 
-        let profile: Profile = Profile::from_str(self.capture_input(
+        let profile: Profile = Profile::from_str(interaction::capture_input(
             "You choose a nice profile. And now, which profile you want? This is the last step of this onboarding",
             "Are you sure?",
             "Ok, let's roll the stats",
@@ -489,7 +417,7 @@ impl SomeDreamApplication {
 
         render::render_attributes(&player);
 
-        let final_confirmation = self.capture_input(
+        let final_confirmation = interaction::capture_input(
             "Confirm everything? Let's begin?",
             "",
             "Nice!",
