@@ -1,6 +1,12 @@
 use text_io::read;
 use rand::Rng;
 use rand::rngs::ThreadRng;
+use strum;
+
+use strum_macros::{EnumString, Display};
+// used implictly by strum...
+use std::str::FromStr;
+use std::string::ToString;
 
 mod render;
 
@@ -8,6 +14,7 @@ mod render;
 pub struct Player {
     name: String,
     role: Role,
+    profile: Profile,
     attributes: Attributes,
     vital_points: VitalPoints
 }
@@ -32,14 +39,37 @@ pub struct VitalPoints {
     social: i8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
+#[strum(serialize_all = "snake_case")]
 enum Role {
-    FIGHTER,
-    MAGE,
-    SURVIVOR,
-    HYPNO,
-    UNKOWN
+    Fighter,
+    Mage,
+    Survivor,
+    Hypno
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
+#[strum(serialize_all = "snake_case")]
+enum Profile {
+    Knight,
+    Warrior,
+    Noble,
+    Rogue,
+    Mage,
+    Warlock,
+    Cleric,
+    WitchDoctor,
+    Bard,
+    Templar,
+    Assassin,
+    Executioner,
+    Hunter,
+    Druid,
+    Barbarian,
+    Shaman,
+    Berserker,
+}
+
 
 enum AttributesRanges {
     HIGH,
@@ -77,9 +107,9 @@ impl SomeDreamApplication {
         }
     }
 
-    fn roll_status(&mut self, value: String) -> Attributes {
-        match value.to_uppercase().as_str() {
-            "KNIGHT" => {
+    fn roll_status(&mut self, profile: Profile) -> Attributes {
+        match profile {
+            Profile::Knight => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::HIGH),
                     agility: self.get_attributes(AttributesRanges::HORRIBLE),
@@ -91,7 +121,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "WARRIOR" => {
+            Profile::Warrior => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::HIGH),
                     agility: self.get_attributes(AttributesRanges::HORRIBLE),
@@ -103,7 +133,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::MEDIUM)
                 }
             },
-            "NOBLE" => {
+            Profile::Noble => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::HORRIBLE),
                     agility: self.get_attributes(AttributesRanges::HIGH),
@@ -115,7 +145,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "ROGUE" => {
+            Profile::Rogue => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::HORRIBLE),
                     agility: self.get_attributes(AttributesRanges::HIGH),
@@ -127,7 +157,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::MEDIUM)
                 }
             },
-            "MAGE" => {
+            Profile::Mage => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -139,7 +169,19 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "CLERIC" => {
+            Profile::Warlock => {
+                Attributes {
+                    strength: self.get_attributes(AttributesRanges::MEDIUM),
+                    agility: self.get_attributes(AttributesRanges::POOR),
+                    intelligence: self.get_attributes(AttributesRanges::HIGH),
+                    will: self.get_attributes(AttributesRanges::HORRIBLE),
+                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
+                    intimidation: self.get_attributes(AttributesRanges::POOR),
+                    wealth: self.get_attributes(AttributesRanges::POOR),
+                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                }
+            },
+            Profile::Cleric => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::MEDIUM),
                     agility: self.get_attributes(AttributesRanges::POOR),
@@ -151,7 +193,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "WITCH_DOCTOR" => {
+            Profile::WitchDoctor => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -163,7 +205,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "BARD" => {
+            Profile::Bard => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -175,7 +217,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::MEDIUM)
                 }
             },
-            "TEMPLAR" => {
+            Profile::Templar => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::MEDIUM),
                     agility: self.get_attributes(AttributesRanges::POOR),
@@ -187,7 +229,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::MEDIUM)
                 }
             },
-            "ASSASSIN" => {
+            Profile::Assassin => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -199,7 +241,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::MEDIUM)
                 }
             },
-            "EXECUTIONER" => {
+            Profile::Executioner => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::MEDIUM),
                     agility: self.get_attributes(AttributesRanges::POOR),
@@ -211,7 +253,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::POOR)
                 }
             },
-            "HUNTER" => {
+            Profile::Hunter => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::MEDIUM),
                     agility: self.get_attributes(AttributesRanges::POOR),
@@ -223,7 +265,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::HORRIBLE)
                 }
             },
-            "DRUID" => {
+            Profile::Druid => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -235,7 +277,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::HORRIBLE)
                 }
             },
-            "BARBARIAN" => {
+            Profile::Barbarian => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::MEDIUM),
                     agility: self.get_attributes(AttributesRanges::POOR),
@@ -247,7 +289,7 @@ impl SomeDreamApplication {
                     resistence: self.get_attributes(AttributesRanges::HIGH)
                 }
             },
-            "SHAMAN" => {
+            Profile::Shaman => {
                 Attributes {
                     strength: self.get_attributes(AttributesRanges::POOR),
                     agility: self.get_attributes(AttributesRanges::MEDIUM),
@@ -262,16 +304,6 @@ impl SomeDreamApplication {
             _ => {
                 panic!("Unknow role. Panic!")
             }
-        }
-    }
-
-    fn retrieve_role(&mut self, value: String) -> Role {
-        match value.to_uppercase().as_str() {
-            "FIGHTER" => Role::FIGHTER,
-            "MAGE" => Role::MAGE,
-            "SURVIVOR" => Role::SURVIVOR,
-            "HYPNO" => Role::HYPNO,
-            _ => Role::UNKOWN,
         }
     }
 
@@ -300,7 +332,7 @@ impl SomeDreamApplication {
 
         let value: String = read!();
 
-        if has_options && !options.contains(&value.to_uppercase()) {
+        if has_options && !options.contains(&value) {
             println!("Your option {} doesn't exists in the list {:?}. try again.", value, options);
             return self.capture_input(
                 before_input_phrase,
@@ -355,10 +387,10 @@ impl SomeDreamApplication {
         );
 
         let roles: Vec<String> = vec!(
-            String::from("FIGHTER"),
-            String::from("MAGE"),
-            String::from("SURVIVOR"),
-            String::from("HYPNO"),
+            Role::Fighter.to_string(),
+            Role::Mage.to_string(),
+            Role::Survivor.to_string(),
+            Role::Hypno.to_string(),
         );
 
         let main_role: String = self.capture_input(
@@ -368,31 +400,29 @@ impl SomeDreamApplication {
             roles,
         );
 
-        let role: Role = self.retrieve_role(main_role);
+        let role: Role = Role::from_str(main_role.as_str()).unwrap();
 
         let mut attributes_options: Vec<String> = vec!();
         let mut profile_suggestions: Vec<String> = vec!();
 
-        
-
+        // TODO: these attributes can be an option with description instead of string match
         match role {
-            Role::FIGHTER => {
+            Role::Fighter => {
                 attributes_options.push(String::from("STRENGTH"));
                 attributes_options.push(String::from("AGILITY"));
             },
-            Role::MAGE => {
+            Role::Mage => {
                 attributes_options.push(String::from("INTELLIGENCE"));
                 attributes_options.push(String::from("WILLPOWER"));
             },
-            Role::HYPNO => {
+            Role::Hypno => {
                 attributes_options.push(String::from("CHARISMA"));
                 attributes_options.push(String::from("INTIMIDATION"));
             },
-            Role::SURVIVOR => {
+            Role::Survivor => {
                 attributes_options.push(String::from("CONSTITUTION"));
                 attributes_options.push(String::from("RESISTENCE"));
             },
-            Role::UNKOWN => panic!("Unknow role. Panic!")
         }
 
         let profiles: String = self.capture_input(
@@ -404,46 +434,46 @@ impl SomeDreamApplication {
 
         match profiles.to_uppercase().as_str() {
             "STRENGTH" => {
-                profile_suggestions.push(String::from("KNIGHT"));
-                profile_suggestions.push(String::from("WARRIOR"));
+                profile_suggestions.push(Profile::Knight.to_string());
+                profile_suggestions.push(Profile::Warrior.to_string());
             },
             "AGILITY" => {
-                profile_suggestions.push(String::from("NOBLE"));
-                profile_suggestions.push(String::from("ROGUE"));
+                profile_suggestions.push(Profile::Noble.to_string());
+                profile_suggestions.push(Profile::Rogue.to_string());
             },
             "INTELLIGENCE" => {
-                profile_suggestions.push(String::from("MAGE"));
-                profile_suggestions.push(String::from("WARLOCK"));
+                profile_suggestions.push(Profile::Mage.to_string());
+                profile_suggestions.push(Profile::Warlock.to_string());
             },
             "WILLPOWER" => {
-                profile_suggestions.push(String::from("CLERIC"));
-                profile_suggestions.push(String::from("WITCH_DOCTOR"));
+                profile_suggestions.push(Profile::Cleric.to_string());
+                profile_suggestions.push(Profile::WitchDoctor.to_string());
             },
             "CHARISMA" => {
-                profile_suggestions.push(String::from("BARD"));
-                profile_suggestions.push(String::from("TEMPLAR"));
+                profile_suggestions.push(Profile::Bard.to_string());
+                profile_suggestions.push(Profile::Templar.to_string());
             },
             "INTIMIDATION" => {
-                profile_suggestions.push(String::from("ASSASSIN"));
-                profile_suggestions.push(String::from("BERSERKER"));
+                profile_suggestions.push(Profile::Assassin.to_string());
+                profile_suggestions.push(Profile::Berserker.to_string());
             },
             "CONSTITUTION" => {
-                profile_suggestions.push(String::from("HUNTER"));
-                profile_suggestions.push(String::from("DRUID"));
+                profile_suggestions.push(Profile::Hunter.to_string());
+                profile_suggestions.push(Profile::Druid.to_string());
             },
             "RESISTENCE" => {
-                profile_suggestions.push(String::from("BARBARIAN"));
-                profile_suggestions.push(String::from("SHAMAN"));
+                profile_suggestions.push(Profile::Barbarian.to_string());
+                profile_suggestions.push(Profile::Shaman.to_string());
             },
             _ => panic!("What attribute was missing? {}", profiles)
         }
 
-        let profile: String = self.capture_input(
+        let profile: Profile = Profile::from_str(self.capture_input(
             "You choose a nice profile. And now, which profile you want? This is the last step of this onboarding",
             "Are you sure?",
             "Ok, let's roll the stats",
             profile_suggestions,
-        );
+        ).as_str()).unwrap();
 
         let attributes: Attributes = self.roll_status(profile);
 
@@ -452,6 +482,7 @@ impl SomeDreamApplication {
         let player = Player {
             name,
             role,
+            profile,
             attributes,
             vital_points,
         };
