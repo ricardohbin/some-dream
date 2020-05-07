@@ -1,5 +1,7 @@
 use super::Player;
 
+use std::fs;
+
 const GRID_HORIZONTAL: usize = 80;
 
 fn render_block(text: String, pattern: String) -> String {
@@ -7,8 +9,17 @@ fn render_block(text: String, pattern: String) -> String {
     let left_padding: usize = full_size - text.len() / 2;
     let right_padding: usize = left_padding - text.len() % 2;
     [
-        pattern.repeat(left_padding), String::from(" "), text, String::from(" "), pattern.repeat(right_padding)
+        pattern.repeat(left_padding),
+        String::from(" "),
+        text,
+        String::from(" "),
+        pattern.repeat(right_padding),
     ].concat()
+}
+
+pub fn render_splash_screen() {
+    let content = fs::read_to_string("./src/art/splash_screen.txt");
+    println!("{}", content.unwrap());
 }
 
 pub fn render_attributes(player: &Player) {

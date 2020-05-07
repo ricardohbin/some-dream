@@ -8,6 +8,7 @@ use std::string::ToString;
 
 mod render;
 mod interaction;
+mod art;
 
 #[derive(Debug)]
 pub struct Player {
@@ -40,7 +41,7 @@ pub struct VitalPoints {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
 #[strum(serialize_all = "snake_case")]
-enum Role {
+pub enum Role {
     Fighter,
     Mage,
     Survivor,
@@ -49,7 +50,7 @@ enum Role {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
 #[strum(serialize_all = "snake_case")]
-enum Profile {
+pub enum Profile {
     Knight,
     Warrior,
     Noble,
@@ -307,6 +308,9 @@ impl SomeDreamApplication {
     }
 
     fn onboarding(&mut self) -> Player {
+
+        render::render_splash_screen();
+
         let name: String = interaction::capture_input(
             "Hello! Welcome to awesome world of some dream. Tell me your name!",
             "Very well. Your name is correct?",
@@ -433,7 +437,8 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        let _player: Player = self.onboarding();
+        let player: Player = self.onboarding();
+        println!("{}", art::choose_picture(player.profile));
     }
 }
 
