@@ -8,7 +8,6 @@ use std::string::ToString;
 
 mod render;
 mod interaction;
-mod art;
 
 #[derive(Debug)]
 pub struct Player {
@@ -437,8 +436,9 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        let player: Player = self.onboarding();
-        println!("{}", art::choose_picture(player.profile));
+        let _player: Player = self.onboarding();
+        // TODO: dynamic path based in role
+        render::render_image_to_ansi("./src/art/fighter.gif");
     }
 }
 
