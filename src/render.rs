@@ -50,15 +50,19 @@ pub fn render_attributes(player: &Player) {
 pub fn render_image_to_ansi(file_path: &str) {
     let path: &Path = Path::new(file_path);
         let img = image::open(path).unwrap();
-        let img_to_render = imageops::resize(&img, 15, 15, FilterType::Nearest);
+        let img_to_render = imageops::resize(&img, 32, 32, FilterType::Nearest);
         let width = img_to_render.width();
         let height = img_to_render.height();
+        let mut output: Vec<String> = vec!();
         
         for y in 0..height {
             for x in 0..width {
                 let top = img_to_render.get_pixel(x,y);
-                print!("{}", RGB(top[0], top[1], top[2]).normal().paint("▀▀"));
+                // See https://en.wikipedia.org/wiki/Block_Elements
+                output.push(format!("{}", RGB(top[0], top[1], top[2]).normal().paint("██")));
             }
-            println!();
+            output.push("\n".to_string());
         }
+
+        print!("{}", output.join(""));
 }
