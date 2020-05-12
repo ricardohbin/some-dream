@@ -1,9 +1,10 @@
 use text_io::read;
+use std::collections::HashMap;
 
 const DEFAULT_OPTIONS: &str = "[y/n]";
 
 fn give_feedback(phrase: &str, value: String) -> String {
-    println!("{}{}", phrase, value);
+    println!("{} - \"{}\"", phrase, value);
     value
 }
 
@@ -70,4 +71,66 @@ pub fn ask() -> bool {
     }
     println!("Wrong option. Try again. The options are {}", DEFAULT_OPTIONS);
     ask()
+}
+
+pub fn pick_an_option(
+    before_input_phrase: &str,
+    after_input_phrase: &str,
+    success_input_phrase: &str,
+    options_map: HashMap<String, String>
+) -> String {
+    let ask_confirmation: bool = after_input_phrase != "";
+
+    println!("{}", before_input_phrase);
+
+    println!("Choose one option");
+
+    for (option, description) in &options_map {
+        println!("{} - {}", option, description);
+    }
+
+    let value: String = read!();
+
+    let option = options_map.get(&value);
+
+    let option_ok: String;
+
+    match option {
+        None => {
+            println!("Your option {} doesn't exists in the list {:?}. try again.", value, options_map);
+            return pick_an_option(
+                before_input_phrase,
+                after_input_phrase,
+                success_input_phrase,
+                options_map
+            )
+        },
+        Some(x) => {
+            option_ok = String::from(x);
+        }
+    }
+
+    if after_input_phrase != "" {
+        let mut after_input_phrase_with_confirmation: String = after_input_phrase.to_owned();
+        if ask_confirmation {
+            after_input_phrase_with_confirmation = format!("{} - {}", after_input_phrase_with_confirmation, DEFAULT_OPTIONS)
+        }
+        println!("{}", after_input_phrase_with_confirmation);
+    }
+
+    if ask_confirmation {
+        if ask() {
+            return give_feedback(success_input_phrase, option_ok);
+        } else {
+            println!("Ok! Let's try again,");
+            return pick_an_option(
+                before_input_phrase,
+                after_input_phrase,
+                success_input_phrase,
+                options_map
+            )
+        }
+    }
+
+    give_feedback(success_input_phrase, value)
 }

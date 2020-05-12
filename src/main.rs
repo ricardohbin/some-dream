@@ -6,6 +6,9 @@ use strum_macros::{EnumString, Display};
 use std::str::FromStr;
 use std::string::ToString;
 
+use std::collections::HashMap;
+
+
 mod render;
 mod interaction;
 
@@ -75,6 +78,10 @@ enum AttributesRanges {
     MEDIUM,
     POOR,
     HORRIBLE
+}
+
+pub enum Xis {
+    
 }
 
 struct SomeDreamApplication {
@@ -436,9 +443,12 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        let _player: Player = self.onboarding();
+        //let _player: Player = self.onboarding();
         // TODO: dynamic path based in role
-        render::render_image_to_ansi("./src/art/fighter.gif");
+        let mut options: HashMap<String, String> = HashMap::new();
+        options.insert(String::from("1"), String::from("What are you doing"));
+        interaction::pick_an_option("Testing", "Sure?", "Ok, nice pick!", options);
+        //render::render_image_to_ansi("./src/art/fighter.gif");
     }
 }
 
