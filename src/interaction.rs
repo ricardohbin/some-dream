@@ -1,7 +1,7 @@
 use text_io::read;
 use std::collections::HashMap;
 
-const DEFAULT_OPTIONS: &str = "[y/n]";
+const DEFAULT_OPTIONS: &'static str = "[y/n]";
 
 fn give_feedback(phrase: &str, value: String) -> String {
     println!("{} - \"{}\"", phrase, value);

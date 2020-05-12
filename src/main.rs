@@ -444,8 +444,6 @@ impl SomeDreamApplication {
     fn main_loop(&mut self) {
         let _player: Player = self.onboarding();
         // TODO: dynamic path based in role
-        //let mut options: HashMap<i8, String> = HashMap::new();
-        //interaction::pick_an_option("Testing", "Sure?", "Ok, nice pick!", options);
         render::render_image_to_ansi("./src/art/fighter.gif");
     }
 }
