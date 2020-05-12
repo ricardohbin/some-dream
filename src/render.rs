@@ -5,9 +5,9 @@ use image::imageops;
 use image::imageops::FilterType;
 use std::path::Path;
 use ansi_term::Colour::RGB;
-use std::collections::HashMap;
 
 const GRID_HORIZONTAL: usize = 80;
+const PIXEL: &'static str = "██";
 
 fn render_block(text: String, pattern: String) -> String {
     let full_size: usize = GRID_HORIZONTAL;
@@ -63,7 +63,7 @@ pub fn render_image_to_ansi(file_path: &str) {
         for x in 0..width {
             let top = img_to_render.get_pixel(x,y);
             // See https://en.wikipedia.org/wiki/Block_Elements
-            output.push(format!("{}", RGB(top[0], top[1], top[2]).normal().paint("██")));
+            output.push(format!("{}", RGB(top[0], top[1], top[2]).normal().paint(PIXEL)));
         }
         output.push("\n".to_string());
     }

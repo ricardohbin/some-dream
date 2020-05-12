@@ -77,19 +77,20 @@ pub fn pick_an_option(
     before_input_phrase: &str,
     after_input_phrase: &str,
     success_input_phrase: &str,
-    options_map: HashMap<String, String>
-) -> String {
+    options_map: HashMap<i8, String>
+) -> i8 {
     let ask_confirmation: bool = after_input_phrase != "";
 
     println!("{}", before_input_phrase);
 
     println!("Choose one option");
 
+    // TODO: hash order
     for (option, description) in &options_map {
         println!("{} - {}", option, description);
     }
 
-    let value: String = read!();
+    let value: i8 = read!();
 
     let option = options_map.get(&value);
 
@@ -120,7 +121,8 @@ pub fn pick_an_option(
 
     if ask_confirmation {
         if ask() {
-            return give_feedback(success_input_phrase, option_ok);
+            give_feedback(success_input_phrase, option_ok);
+            return value;
         } else {
             println!("Ok! Let's try again,");
             return pick_an_option(
@@ -132,5 +134,5 @@ pub fn pick_an_option(
         }
     }
 
-    give_feedback(success_input_phrase, value)
+    value
 }

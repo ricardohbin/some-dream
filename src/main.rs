@@ -74,14 +74,14 @@ pub enum Profile {
 
 
 enum AttributesRanges {
-    HIGH,
-    MEDIUM,
-    POOR,
-    HORRIBLE
+    High,
+    Medium,
+    Poor,
+    Horrible
 }
 
-pub enum Xis {
-    
+pub enum ProfileOptions {
+    Brute
 }
 
 struct SomeDreamApplication {
@@ -97,10 +97,10 @@ impl SomeDreamApplication {
 
     fn get_attributes(&mut self, ranges: AttributesRanges) -> i8 {
         match ranges {
-            AttributesRanges::HIGH => self.rng.gen_range(6, 9),
-            AttributesRanges::MEDIUM => self.rng.gen_range(4, 7),
-            AttributesRanges::POOR => self.rng.gen_range(2, 5),
-            AttributesRanges::HORRIBLE => self.rng.gen_range(0, 3),
+            AttributesRanges::High => self.rng.gen_range(6, 9),
+            AttributesRanges::Medium => self.rng.gen_range(4, 7),
+            AttributesRanges::Poor => self.rng.gen_range(2, 5),
+            AttributesRanges::Horrible => self.rng.gen_range(0, 3),
         }
     }
 
@@ -117,194 +117,194 @@ impl SomeDreamApplication {
         match profile {
             Profile::Knight => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::HIGH),
-                    agility: self.get_attributes(AttributesRanges::HORRIBLE),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::High),
+                    agility: self.get_attributes(AttributesRanges::Horrible),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::Warrior => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::HIGH),
-                    agility: self.get_attributes(AttributesRanges::HORRIBLE),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::High),
+                    agility: self.get_attributes(AttributesRanges::Horrible),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Noble => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::HORRIBLE),
-                    agility: self.get_attributes(AttributesRanges::HIGH),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::Horrible),
+                    agility: self.get_attributes(AttributesRanges::High),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::Rogue => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::HORRIBLE),
-                    agility: self.get_attributes(AttributesRanges::HIGH),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::Horrible),
+                    agility: self.get_attributes(AttributesRanges::High),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Mage => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::HIGH),
-                    will: self.get_attributes(AttributesRanges::HORRIBLE),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::High),
+                    will: self.get_attributes(AttributesRanges::Horrible),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::Warlock => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::HIGH),
-                    will: self.get_attributes(AttributesRanges::HORRIBLE),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::High),
+                    will: self.get_attributes(AttributesRanges::Horrible),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Cleric => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::HORRIBLE),
-                    will: self.get_attributes(AttributesRanges::HIGH),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::Horrible),
+                    will: self.get_attributes(AttributesRanges::High),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::WitchDoctor => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::HIGH),
-                    will: self.get_attributes(AttributesRanges::HORRIBLE),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::High),
+                    will: self.get_attributes(AttributesRanges::Horrible),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::Bard => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::HIGH),
-                    intimidation: self.get_attributes(AttributesRanges::HORRIBLE),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::High),
+                    intimidation: self.get_attributes(AttributesRanges::Horrible),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Templar => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::HIGH),
-                    intimidation: self.get_attributes(AttributesRanges::HORRIBLE),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::High),
+                    intimidation: self.get_attributes(AttributesRanges::Horrible),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Assassin => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::HORRIBLE),
-                    intimidation: self.get_attributes(AttributesRanges::HIGH),
-                    wealth: self.get_attributes(AttributesRanges::POOR),
-                    resistence: self.get_attributes(AttributesRanges::MEDIUM)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::Horrible),
+                    intimidation: self.get_attributes(AttributesRanges::High),
+                    wealth: self.get_attributes(AttributesRanges::Poor),
+                    resistence: self.get_attributes(AttributesRanges::Medium)
                 }
             },
             Profile::Executioner => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::HORRIBLE),
-                    intimidation: self.get_attributes(AttributesRanges::HIGH),
-                    wealth: self.get_attributes(AttributesRanges::MEDIUM),
-                    resistence: self.get_attributes(AttributesRanges::POOR)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::Horrible),
+                    intimidation: self.get_attributes(AttributesRanges::High),
+                    wealth: self.get_attributes(AttributesRanges::Medium),
+                    resistence: self.get_attributes(AttributesRanges::Poor)
                 }
             },
             Profile::Hunter => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::HIGH),
-                    resistence: self.get_attributes(AttributesRanges::HORRIBLE)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::High),
+                    resistence: self.get_attributes(AttributesRanges::Horrible)
                 }
             },
             Profile::Druid => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::HIGH),
-                    resistence: self.get_attributes(AttributesRanges::HORRIBLE)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::High),
+                    resistence: self.get_attributes(AttributesRanges::Horrible)
                 }
             },
             Profile::Barbarian => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::MEDIUM),
-                    agility: self.get_attributes(AttributesRanges::POOR),
-                    intelligence: self.get_attributes(AttributesRanges::POOR),
-                    will: self.get_attributes(AttributesRanges::MEDIUM),
-                    charisma: self.get_attributes(AttributesRanges::POOR),
-                    intimidation: self.get_attributes(AttributesRanges::MEDIUM),
-                    wealth: self.get_attributes(AttributesRanges::HORRIBLE),
-                    resistence: self.get_attributes(AttributesRanges::HIGH)
+                    strength: self.get_attributes(AttributesRanges::Medium),
+                    agility: self.get_attributes(AttributesRanges::Poor),
+                    intelligence: self.get_attributes(AttributesRanges::Poor),
+                    will: self.get_attributes(AttributesRanges::Medium),
+                    charisma: self.get_attributes(AttributesRanges::Poor),
+                    intimidation: self.get_attributes(AttributesRanges::Medium),
+                    wealth: self.get_attributes(AttributesRanges::Horrible),
+                    resistence: self.get_attributes(AttributesRanges::High)
                 }
             },
             Profile::Shaman => {
                 Attributes {
-                    strength: self.get_attributes(AttributesRanges::POOR),
-                    agility: self.get_attributes(AttributesRanges::MEDIUM),
-                    intelligence: self.get_attributes(AttributesRanges::MEDIUM),
-                    will: self.get_attributes(AttributesRanges::POOR),
-                    charisma: self.get_attributes(AttributesRanges::MEDIUM),
-                    intimidation: self.get_attributes(AttributesRanges::POOR),
-                    wealth: self.get_attributes(AttributesRanges::HORRIBLE),
-                    resistence: self.get_attributes(AttributesRanges::HIGH)
+                    strength: self.get_attributes(AttributesRanges::Poor),
+                    agility: self.get_attributes(AttributesRanges::Medium),
+                    intelligence: self.get_attributes(AttributesRanges::Medium),
+                    will: self.get_attributes(AttributesRanges::Poor),
+                    charisma: self.get_attributes(AttributesRanges::Medium),
+                    intimidation: self.get_attributes(AttributesRanges::Poor),
+                    wealth: self.get_attributes(AttributesRanges::Horrible),
+                    resistence: self.get_attributes(AttributesRanges::High)
                 }
             }
             _ => {
@@ -340,66 +340,65 @@ impl SomeDreamApplication {
 
         let role: Role = Role::from_str(main_role.as_str()).unwrap();
 
-        let mut attributes_options: Vec<String> = vec!();
         let mut profile_suggestions: Vec<String> = vec!();
+        let mut attributes_options: HashMap<i8, String> = HashMap::new();
 
-        // TODO: these attributes can be an option with description instead of string match
         match role {
             Role::Fighter => {
-                attributes_options.push(String::from("STRENGTH"));
-                attributes_options.push(String::from("AGILITY"));
+                attributes_options.insert(1, String::from("A fighter who wants to kill?"));
+                attributes_options.insert(2, String::from("A furtive and gracious killer?"));
             },
             Role::Mage => {
-                attributes_options.push(String::from("INTELLIGENCE"));
-                attributes_options.push(String::from("WILLPOWER"));
+                attributes_options.insert(3, String::from("An intellectual moved by pure math and know the deep art of magic?"));
+                attributes_options.insert(4, String::from("A person moved by his beliefs and its intuition?"));
             },
             Role::Hypno => {
-                attributes_options.push(String::from("CHARISMA"));
-                attributes_options.push(String::from("INTIMIDATION"));
+                attributes_options.insert(5, String::from("A person with High presence and influence?"));
+                attributes_options.insert(6, String::from("A person based in intimidation and manipulation based in its aggression?"));
             },
             Role::Survivor => {
-                attributes_options.push(String::from("CONSTITUTION"));
-                attributes_options.push(String::from("RESISTENCE"));
+                attributes_options.insert(7, String::from("A wealthy person with great cardio and good costumes"));
+                attributes_options.insert(8, String::from("A survivor, hurt by life?"));
             },
         }
 
-        let profiles: String = interaction::capture_input(
+        let profiles: i8 = interaction::pick_an_option(
             "Okay, now I want to know what will be your primary attribute, then I will ask you some profiles based on it",
             "Are you sure?",
             "",
             attributes_options,
         );
 
-        match profiles.to_uppercase().as_str() {
-            "STRENGTH" => {
+        match profiles {
+            1 => {
                 profile_suggestions.push(Profile::Knight.to_string());
                 profile_suggestions.push(Profile::Warrior.to_string());
             },
-            "AGILITY" => {
+            2 => {
                 profile_suggestions.push(Profile::Noble.to_string());
                 profile_suggestions.push(Profile::Rogue.to_string());
             },
-            "INTELLIGENCE" => {
+            3 => {
                 profile_suggestions.push(Profile::Mage.to_string());
                 profile_suggestions.push(Profile::Warlock.to_string());
             },
-            "WILLPOWER" => {
+            4 => {
                 profile_suggestions.push(Profile::Cleric.to_string());
                 profile_suggestions.push(Profile::WitchDoctor.to_string());
             },
-            "CHARISMA" => {
+            5 => {
                 profile_suggestions.push(Profile::Bard.to_string());
                 profile_suggestions.push(Profile::Templar.to_string());
             },
-            "INTIMIDATION" => {
+            6 => {
                 profile_suggestions.push(Profile::Assassin.to_string());
                 profile_suggestions.push(Profile::Berserker.to_string());
             },
-            "CONSTITUTION" => {
+            7 => {
                 profile_suggestions.push(Profile::Hunter.to_string());
                 profile_suggestions.push(Profile::Druid.to_string());
             },
-            "RESISTENCE" => {
+            8 => {
                 profile_suggestions.push(Profile::Barbarian.to_string());
                 profile_suggestions.push(Profile::Shaman.to_string());
             },
@@ -443,12 +442,11 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        //let _player: Player = self.onboarding();
+        let _player: Player = self.onboarding();
         // TODO: dynamic path based in role
-        let mut options: HashMap<String, String> = HashMap::new();
-        options.insert(String::from("1"), String::from("What are you doing"));
-        interaction::pick_an_option("Testing", "Sure?", "Ok, nice pick!", options);
-        //render::render_image_to_ansi("./src/art/fighter.gif");
+        //let mut options: HashMap<i8, String> = HashMap::new();
+        //interaction::pick_an_option("Testing", "Sure?", "Ok, nice pick!", options);
+        render::render_image_to_ansi("./src/art/fighter.gif");
     }
 }
 
