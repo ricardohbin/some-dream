@@ -11,6 +11,7 @@ use std::collections::HashMap;
 
 mod render;
 mod interaction;
+mod map;
 
 #[derive(Debug)]
 pub struct Player {
@@ -442,9 +443,36 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        let _player: Player = self.onboarding();
+        // let _player: Player = self.onboarding();
+
+        let player: Player = Player{
+            name: "Bin".to_string(),
+            role: Role::Fighter,
+            profile: Profile::Knight,
+            attributes: Attributes{
+                strength: 3,
+                agility: 3,
+                intelligence: 3,
+                will: 3,
+                charisma: 3,
+                intimidation: 3,
+                wealth: 3,
+                resistence: 3,
+            },
+            vital_points: VitalPoints{
+                life: 6,
+                luck: 6,
+                cardio: 6,
+                social: 6,
+            }
+        };
         // TODO: dynamic path based in role
         render::render_image_to_ansi("./src/art/fighter.gif");
+        println!("It's you! Nice shape ahn? Let's begin finally....");
+
+        
+        println!("{}", map::add_to_map(0, 1, 7));
+        println!("{}", map::add_to_map(0, 1, 6));
     }
 }
 
