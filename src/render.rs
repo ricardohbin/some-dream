@@ -70,3 +70,8 @@ pub fn render_image_to_ansi(file_path: &str) {
 
     print!("{}", output.join(""));
 }
+
+
+pub fn render_map(map: String, description: String) {
+    println!("{}\n\n{}", map, description);
+}

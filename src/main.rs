@@ -468,11 +468,25 @@ impl SomeDreamApplication {
         };
         // TODO: dynamic path based in role
         render::render_image_to_ansi("./src/art/fighter.gif");
-        println!("It's you! Nice shape ahn? Let's begin finally....");
+        println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
-        
-        println!("{}", map::add_to_map(0, 1, 7));
-        println!("{}", map::add_to_map(0, 1, 6));
+        let mut x: usize = 1;
+        let mut y: usize = 7;
+
+        loop {
+            let map_options: map::MapOptions = map::point(0, x, y);
+            render::render_map(map_options.minimap, map_options.description);
+
+            let direction: String = interaction::capture_input("What path you go?", "", "", map_options.directions);
+
+            match direction.as_str() {
+                "n" => y = y - 1,
+                "s" => y = y + 1,
+                "e" => x = x - 1,
+                "w" => x = x + 1,
+                _ => panic!("Invalid direction... this can't happen"),
+            }
+        }
     }
 }
 
