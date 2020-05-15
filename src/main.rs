@@ -443,9 +443,9 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        // let _player: Player = self.onboarding();
+        let _player: Player = self.onboarding();
 
-        let player: Player = Player{
+        let _debug_mode_player: Player = Player{
             name: "Bin".to_string(),
             role: Role::Fighter,
             profile: Profile::Knight,
@@ -466,24 +466,31 @@ impl SomeDreamApplication {
                 social: 6,
             }
         };
+
         // TODO: dynamic path based in role
         render::render_image_to_ansi("./src/art/fighter.gif");
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
         let mut x: usize = 1;
         let mut y: usize = 7;
+        let mut index: usize = 0;
 
         loop {
-            let map_options: map::MapOptions = map::point(0, x, y);
+            let map_options: map::MapOptions = map::point(index, x, y);
             render::render_map(map_options.minimap, map_options.description);
 
-            let direction: String = interaction::capture_input("What path you go?", "", "", map_options.directions);
+            //resync in possible repaint of map
+            x = map_options.x;
+            y = map_options.y;
+            index = map_options.index;
+
+            let direction: String = interaction::capture_input("What path you go?", "", "You choose", map_options.directions);
 
             match direction.as_str() {
-                "n" => y = y - 1,
-                "s" => y = y + 1,
-                "e" => x = x - 1,
-                "w" => x = x + 1,
+                "n" => y -= 1,
+                "s" => y += 1,
+                "e" => x -= 1,
+                "w" => x += 1,
                 _ => panic!("Invalid direction... this can't happen"),
             }
         }
