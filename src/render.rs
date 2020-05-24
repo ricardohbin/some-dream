@@ -7,7 +7,7 @@ use std::path::Path;
 use ansi_term::Colour::RGB;
 
 const GRID_HORIZONTAL: usize = 80;
-const PIXEL: &'static str = "██";
+const PIXEL: &str = "██";
 
 fn render_block(text: String, pattern: String) -> String {
     let full_size: usize = GRID_HORIZONTAL;

@@ -7,7 +7,7 @@ use std::str::FromStr;
 use std::string::ToString;
 
 use std::collections::HashMap;
-
+use std::env;
 
 mod render;
 mod interaction;
@@ -443,29 +443,33 @@ impl SomeDreamApplication {
     }
 
     fn main_loop(&mut self) {
-        let _player: Player = self.onboarding();
+        let mut _player: Player;
 
-        let _debug_mode_player: Player = Player{
-            name: "Bin".to_string(),
-            role: Role::Fighter,
-            profile: Profile::Knight,
-            attributes: Attributes{
-                strength: 3,
-                agility: 3,
-                intelligence: 3,
-                will: 3,
-                charisma: 3,
-                intimidation: 3,
-                wealth: 3,
-                resistence: 3,
-            },
-            vital_points: VitalPoints{
-                life: 6,
-                luck: 6,
-                cardio: 6,
-                social: 6,
-            }
-        };
+        if env::var("DEBUG").is_ok() &&  env::var("DEBUG").unwrap() == "1" {
+            _player = Player{
+                name: "Bin".to_string(),
+                role: Role::Fighter,
+                profile: Profile::Knight,
+                attributes: Attributes{
+                    strength: 3,
+                    agility: 3,
+                    intelligence: 3,
+                    will: 3,
+                    charisma: 3,
+                    intimidation: 3,
+                    wealth: 3,
+                    resistence: 3,
+                },
+                vital_points: VitalPoints{
+                    life: 6,
+                    luck: 6,
+                    cardio: 6,
+                    social: 6,
+                }
+            };
+        } else {
+            _player = self.onboarding();
+        }
 
         // TODO: dynamic path based in role
         render::render_image_to_ansi("./src/art/fighter.gif");

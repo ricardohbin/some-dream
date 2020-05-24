@@ -1,3 +1,5 @@
+const PLAYER: &str = "P";
+
 pub struct MapOptions {
     pub minimap: String,
     pub description: String,
@@ -10,14 +12,15 @@ pub struct MapOptions {
 //TODO: global lazy_static 
 //TODO2: better handling of multilines - files?
 fn get_map_description(index: usize) -> &'static str {
-    return vec!("
+    vec!("
         This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.
     ",
-    "This is the second room! Description soon....")[index];
+    "This is the second room! Description soon....",
+    "This is a wide open area. Feel free to explore.")[index]
 }
 
 fn clean_white_spaces(value: &str) -> String {
-    return value.to_string().replace(" ", "");
+    value.to_string().replace(" ", "")
 }
 
 fn get_map() -> Vec<&'static str> {
@@ -33,17 +36,28 @@ fn get_map() -> Vec<&'static str> {
          #.#
          ###",
          // map 1
-         "#############
-          0...........#
-          #........?..#
-          #############"
+        "#############
+         0...........#
+         #........?.2#
+         #############",
+         // map 2
+        "##########################################
+         #........................................#
+         #........................................#
+         #...........M..............C.............#
+         #........................................#
+         #.....D..................................#
+         1........................................#
+         ##########################################
+        "
     );
 }
 
-fn get_map_points(index: usize) -> (usize, usize, usize) {
+fn get_map_points(index: usize) -> (usize, usize) {
     match index {
-        0 => (index, 1, 7),
-        1 => (index, 1, 1),
+        0 => (1, 7),
+        1 => (1, 1),
+        2 => (1, 6),
         _ => panic!("This can't happen in start point")
     }
 }
@@ -54,27 +68,27 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
     let column = x + 1;
 
     let map: Vec<&str> = get_map();
+
     // removing extra spaces
     let map_string = clean_white_spaces(map[index]);
-    let mut lines: Vec<&str> = map_string.split("\n").collect();
+
+    // note: char '\n' instead of "\n" is proposital
+    let mut lines: Vec<&str> = map_string.split('\n').collect();
+
     let mut columns: Vec<&str> = lines[y].split("").collect();
 
-
+    println!("{}", index);
     //check if there's an interaction before. Only numbers that means rooms
     if &lines[y][x..column] != "#" && &lines[y][x..column] != "." {
         let result_change_map: Result<usize, std::num::ParseIntError> = lines[y][x..column].parse::<usize>();
 
-        match result_change_map {
-            Ok(map_index) => {
-                let map_points = get_map_points(map_index);
-                return point(map_points.0, map_points.1, map_points.2);
-            },
-            _ => {}
+        if let Ok(map_index) = result_change_map {
+            let map_points = get_map_points(map_index);
+            return point(map_index, map_points.0, map_points.1);
         }
-        // return point(change_map.0, change_map.1, change_map.2);
     }
     
-    columns[column] = "J";
+    columns[column] = PLAYER;
 
     let new_line = columns.join("");
     lines[y] = new_line.as_str();
@@ -100,7 +114,7 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
         directions.push("n".to_string());
     }
 
-    return MapOptions{
+    MapOptions{
         minimap: new_map,
         description: get_map_description(index).trim().to_string(),
         directions,
