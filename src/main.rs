@@ -86,13 +86,15 @@ pub enum ProfileOptions {
 }
 
 struct SomeDreamApplication {
-    rng: ThreadRng
+    rng: ThreadRng,
+    is_debug_mode: bool,
 }
 
 impl SomeDreamApplication {
-    pub fn initialize(rng: ThreadRng) -> Self {
+    pub fn initialize(rng: ThreadRng, is_debug_mode: bool) -> Self {
         Self {
-            rng
+            rng,
+            is_debug_mode,
         }
     }
 
@@ -445,8 +447,7 @@ impl SomeDreamApplication {
     fn main_loop(&mut self) {
         let mut _player: Player;
 
-        if env::var("DEBUG").is_ok() &&  env::var("DEBUG").unwrap() == "1" {
-            _player = Player{
+        let _player = if self.is_debug_mode { Player{
                 name: "Bin".to_string(),
                 role: Role::Fighter,
                 profile: Profile::Knight,
@@ -466,13 +467,14 @@ impl SomeDreamApplication {
                     cardio: 6,
                     social: 6,
                 }
-            };
+            }
         } else {
-            _player = self.onboarding();
-        }
+            self.onboarding()
+        };
 
-        // TODO: dynamic path based in role
+        // TODO: dynamic path based in role. And the art itself... :P
         render::render_image_to_ansi("./src/art/fighter.gif");
+
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
         let mut x: usize = 1;
@@ -502,6 +504,9 @@ impl SomeDreamApplication {
 }
 
 fn main() {
-    let mut app = SomeDreamApplication::initialize(rand::thread_rng());
+    let mut app = SomeDreamApplication::initialize(
+        rand::thread_rng(),
+        env::var("DEBUG").is_ok() && env::var("DEBUG").unwrap() == "1"
+    );
     app.main_loop();
 }

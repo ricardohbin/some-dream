@@ -38,7 +38,7 @@ fn get_map() -> Vec<&'static str> {
          // map 1
         "#############
          0...........#
-         #........?.2#
+         #........?..2
          #############",
          // map 2
         "##########################################
@@ -53,11 +53,13 @@ fn get_map() -> Vec<&'static str> {
     );
 }
 
-fn get_map_points(index: usize) -> (usize, usize) {
-    match index {
-        0 => (1, 7),
-        1 => (1, 1),
-        2 => (1, 6),
+fn get_map_points(index: usize, is_returning: bool) -> (usize, usize) {
+    match (index, is_returning) {
+        (0, false) => (1, 7),
+        (0, true) => (12, 1),
+        (1, false) => (1, 1),
+        (1, true) => (11, 2),
+        (2, false) => (1, 6),
         _ => panic!("This can't happen in start point")
     }
 }
@@ -77,19 +79,20 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
 
     let mut columns: Vec<&str> = lines[y].split("").collect();
 
-    println!("{}", index);
+    
     //check if there's an interaction before. Only numbers that means rooms
     if &lines[y][x..column] != "#" && &lines[y][x..column] != "." {
         let result_change_map: Result<usize, std::num::ParseIntError> = lines[y][x..column].parse::<usize>();
 
         if let Ok(map_index) = result_change_map {
-            let map_points = get_map_points(map_index);
+            let map_points = get_map_points(map_index, index > map_index);
             return point(map_index, map_points.0, map_points.1);
         }
     }
     
     columns[column] = PLAYER;
 
+    // creating a binding to avoid temporary value dropped while borrowed
     let new_line = columns.join("");
     lines[y] = new_line.as_str();
     let new_map = lines.join("\n");
