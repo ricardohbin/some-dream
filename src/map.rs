@@ -1,3 +1,6 @@
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+
 const PLAYER: &str = "P";
 
 pub struct MapOptions {
@@ -8,6 +11,74 @@ pub struct MapOptions {
     pub y: usize,
     pub index: usize,
 }
+
+
+lazy_static! {
+    static ref MAPS: HashMap<i8, Map> = {
+        let mut m: HashMap<i8, Map> = HashMap::new();
+
+        let mut ent0: HashMap<i8, (usize, usize)>= HashMap::new();
+        let mut ex0: HashMap<i8, (usize, usize)>= HashMap::new();
+        ent0.insert(0, (1, 7));
+        ex0.insert(1, (12 ,1));
+        m.insert(0, Map{
+        description: "This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.",
+        minimap:   "##############
+                    #............1
+                    #.############
+                    #.#
+                    #.#
+                    #.#
+                    #.#
+                    #.#
+                    ###",
+        enterpoints: ent0,
+        exits: ex0
+        });
+
+        let mut ent1: HashMap<i8, (usize, usize)>= HashMap::new();
+        let mut ex1: HashMap<i8, (usize, usize)>= HashMap::new();
+        ent1.insert(1, (1, 1));
+        ex1.insert(1, (12 ,1));
+        m.insert(0, Map{
+        description: "This is the second room! Description soon....",
+        minimap: "#############
+                  0...........#
+                  #........?..2
+                  #############",
+        enterpoints: ent1,
+        exits: ex1
+        });
+
+        let mut ent2: HashMap<i8, (usize, usize)>= HashMap::new();
+        let ex2: HashMap<i8, (usize, usize)>= HashMap::new();
+        ent2.insert(2, (1, 6));
+        m.insert(0, Map{
+        description: "This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.",
+        minimap: "##########################################
+                  #........................................#
+                  #........................................#
+                  #...........M..............C.............#
+                  #........................................#
+                  #.....D..................................#
+                  1........................................#
+                  ##########################################",
+        enterpoints: ent2,
+        exits: ex2
+        });
+
+        m
+    };
+}
+
+pub struct Map {
+    enterpoints: HashMap<i8, (usize, usize)>,
+    exits: HashMap<i8, (usize, usize)>,
+    description: &'static str,
+    minimap: &'static str
+}
+
+
 
 //TODO: global lazy_static 
 //TODO2: better handling of multilines - files?
