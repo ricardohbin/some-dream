@@ -14,11 +14,11 @@ pub struct MapOptions {
 
 
 lazy_static! {
-    static ref MAPS: HashMap<i8, Map> = {
-        let mut m: HashMap<i8, Map> = HashMap::new();
+    static ref MAPS: HashMap<usize, Map> = {
+        let mut m: HashMap<usize, Map> = HashMap::new();
 
-        let mut ent0: HashMap<i8, (usize, usize)>= HashMap::new();
-        let mut ex0: HashMap<i8, (usize, usize)>= HashMap::new();
+        let mut ent0: HashMap<usize, (usize, usize)>= HashMap::new();
+        let mut ex0: HashMap<usize, (usize, usize)>= HashMap::new();
         ent0.insert(0, (1, 7));
         ex0.insert(1, (12 ,1));
         m.insert(0, Map{
@@ -36,11 +36,11 @@ lazy_static! {
         exits: ex0
         });
 
-        let mut ent1: HashMap<i8, (usize, usize)>= HashMap::new();
-        let mut ex1: HashMap<i8, (usize, usize)>= HashMap::new();
+        let mut ent1: HashMap<usize, (usize, usize)>= HashMap::new();
+        let mut ex1: HashMap<usize, (usize, usize)>= HashMap::new();
         ent1.insert(1, (1, 1));
-        ex1.insert(1, (12 ,1));
-        m.insert(0, Map{
+        ex1.insert(2, (11 ,2));
+        m.insert(1, Map{
         description: "This is the second room! Description soon....",
         minimap: "#############
                   0...........#
@@ -50,10 +50,11 @@ lazy_static! {
         exits: ex1
         });
 
-        let mut ent2: HashMap<i8, (usize, usize)>= HashMap::new();
-        let ex2: HashMap<i8, (usize, usize)>= HashMap::new();
+        let mut ent2: HashMap<usize, (usize, usize)>= HashMap::new();
+        let mut ex2: HashMap<usize, (usize, usize)>= HashMap::new();
         ent2.insert(2, (1, 6));
-        m.insert(0, Map{
+        ex2.insert(1, (3, 3));
+        m.insert(2, Map{
         description: "This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.",
         minimap: "##########################################
                   #........................................#
@@ -71,68 +72,16 @@ lazy_static! {
     };
 }
 
+#[derive(Debug)]
 pub struct Map {
-    enterpoints: HashMap<i8, (usize, usize)>,
-    exits: HashMap<i8, (usize, usize)>,
+    enterpoints: HashMap<usize, (usize, usize)>,
+    exits: HashMap<usize, (usize, usize)>,
     description: &'static str,
     minimap: &'static str
 }
 
-
-
-//TODO: global lazy_static 
-//TODO2: better handling of multilines - files?
-fn get_map_description(index: usize) -> &'static str {
-    vec!("
-        This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.
-    ",
-    "This is the second room! Description soon....",
-    "This is a wide open area. Feel free to explore.")[index]
-}
-
 fn clean_white_spaces(value: &str) -> String {
     value.to_string().replace(" ", "")
-}
-
-fn get_map() -> Vec<&'static str> {
-    return vec!(
-        //map 0
-        "##############
-         #............1
-         #.############
-         #.#
-         #.#
-         #.#
-         #.#
-         #.#
-         ###",
-         // map 1
-        "#############
-         0...........#
-         #........?..2
-         #############",
-         // map 2
-        "##########################################
-         #........................................#
-         #........................................#
-         #...........M..............C.............#
-         #........................................#
-         #.....D..................................#
-         1........................................#
-         ##########################################
-        "
-    );
-}
-
-fn get_map_points(index: usize, is_returning: bool) -> (usize, usize) {
-    match (index, is_returning) {
-        (0, false) => (1, 7),
-        (0, true) => (12, 1),
-        (1, false) => (1, 1),
-        (1, true) => (11, 2),
-        (2, false) => (1, 6),
-        _ => panic!("This can't happen in start point")
-    }
 }
 
 pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
@@ -140,10 +89,17 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
     // TODO: better split to this, to use x as is
     let column = x + 1;
 
-    let map: Vec<&str> = get_map();
+    let map_string;
+    let map;
 
-    // removing extra spaces
-    let map_string = clean_white_spaces(map[index]);
+    match MAPS.get(&index) {
+        Some(m) => {
+            map = m;
+            // removing extra spaces
+            map_string = clean_white_spaces(m.minimap);
+        },
+        None => panic!("No map match with the key {} - ", index),
+    }
 
     // note: char '\n' instead of "\n" is proposital
     let mut lines: Vec<&str> = map_string.split('\n').collect();
@@ -156,8 +112,28 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
         let result_change_map: Result<usize, std::num::ParseIntError> = lines[y][x..column].parse::<usize>();
 
         if let Ok(map_index) = result_change_map {
-            let map_points = get_map_points(map_index, index > map_index);
-            return point(map_index, map_points.0, map_points.1);
+            let next_map;
+            match MAPS.get(&map_index) {
+                Some(m) => {
+                    next_map = m;
+                },
+                None => panic!("No map match with the key {} - ", index),
+            }
+            if index < map_index {
+                match next_map.enterpoints.get(&map_index) {
+                    Some(map_points) => {
+                        return point(map_index, map_points.0, map_points.1);
+                    },
+                    None => panic!("No enterpoint {} found at map #{}", map_index, index),
+                }
+            } else {
+                match next_map.exits.get(&index) {
+                    Some(map_points) => {
+                        return point(map_index, map_points.0, map_points.1);
+                    },
+                    None => panic!("No exit {} found at map #{}, {:?}", map_index, index, next_map),
+                }
+            }
         }
     }
     
@@ -190,7 +166,7 @@ pub fn point(index: usize, x: usize, y: usize) -> MapOptions {
 
     MapOptions{
         minimap: new_map,
-        description: get_map_description(index).trim().to_string(),
+        description: map.description.trim().to_string(),
         directions,
         x,
         y,
