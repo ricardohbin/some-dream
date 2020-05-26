@@ -12,6 +12,7 @@ use std::env;
 mod render;
 mod interaction;
 mod map;
+mod color;
 
 #[derive(Debug)]
 pub struct Player {
@@ -483,7 +484,16 @@ impl SomeDreamApplication {
 
         loop {
             let map_options: map::MapOptions = map::point(index, x, y);
-            render::render_map(map_options.minimap, map_options.description);
+            let description = map_options.description;
+            let mut minimap = map_options.minimap;
+
+            // TODO: Adding custom color in minimap - move this from here later in the map class
+            // TODO2: Suport tags like to description coloring <color>Xis</color>?
+            minimap = color::paint(Box::new(color::Gray{}), "#", minimap.as_str());
+            minimap = color::paint(Box::new(color::Green{}), ".", minimap.as_str());
+            minimap = color::paint(Box::new(color::Yellow{}), "?", minimap.as_str());
+
+            println!("{}\n\n{}", minimap, description);
 
             //resync in possible repaint of map
             x = map_options.x;

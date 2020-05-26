@@ -9,7 +9,6 @@ edition = "2018"
 [dependencies]
 text_io = "*"
 rand = "*"
-console = "*"
 strum = "0.18.0"
 strum_macros = "0.18.0"
 image = "*"

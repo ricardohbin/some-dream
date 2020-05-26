@@ -12,7 +12,8 @@ This RPG system and the game design are building from scratch - and in a hacking
 - I will avoid to use fancy libs to do the job, I will try to keep free from dependencies and abstractions
 - I will apply classic render and interation techniques from zero for studying and 4science
 - For now, I am using type annotation to every variable binding - it is more verbose but it's ok. Other little things like `String::from` instead `to_string` are in use.
-- Doing the job first. Separation of concerns, tests and other kind of things later. 
+- Doing the job first. Separation of concerns, tests and other kind of things later.
+- Free style push to master ftw
 - The main target is to have fun at all
 
 

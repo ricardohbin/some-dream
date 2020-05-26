@@ -9,6 +9,7 @@ use ansi_term::Colour::RGB;
 const GRID_HORIZONTAL: usize = 80;
 const PIXEL: &str = "██";
 
+
 fn render_block(text: String, pattern: String) -> String {
     let full_size: usize = GRID_HORIZONTAL;
     let left_padding: usize = full_size - text.len() / 2;
@@ -69,9 +70,4 @@ pub fn render_image_to_ansi(file_path: &str) {
     }
 
     print!("{}", output.join(""));
-}
-
-
-pub fn render_map(map: String, description: String) {
-    println!("{}\n\n{}", map, description);
 }

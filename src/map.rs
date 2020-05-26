@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 const PLAYER: &str = "P";
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MapOptions {
     pub minimap: String,
     pub description: String,
@@ -55,13 +56,13 @@ lazy_static! {
         ent2.insert(2, (1, 6));
         ex2.insert(1, (3, 3));
         m.insert(2, Map{
-        description: "This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.",
+        description: "This is a strange village. There are some points of interest. Will you check them?",
         minimap: "##########################################
                   #........................................#
                   #........................................#
-                  #...........M..............C.............#
+                  #...........?..............?.............#
                   #........................................#
-                  #.....D..................................#
+                  #.....?..................................#
                   1........................................#
                   ##########################################",
         enterpoints: ent2,
