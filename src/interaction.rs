@@ -73,11 +73,11 @@ pub fn ask() -> bool {
     ask()
 }
 
-pub fn pick_an_option(
+pub fn pick_an_option<S: std::hash::BuildHasher>(
     before_input_phrase: &str,
     after_input_phrase: &str,
     success_input_phrase: &str,
-    options_map: HashMap<i8, String>
+    options_map: HashMap<i8, String, S>
 ) -> i8 {
     let ask_confirmation: bool = after_input_phrase != "";
 

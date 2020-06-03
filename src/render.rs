@@ -1,4 +1,4 @@
-use super::Player;
+use super::player::Player;
 
 use std::fs;
 use image::imageops;
