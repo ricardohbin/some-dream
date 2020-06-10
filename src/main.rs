@@ -2,12 +2,15 @@ use rand::rngs::ThreadRng;
 
 use std::env;
 
+
 pub mod render;
 pub mod interaction;
-mod map;
-mod color;
-mod onboarding;
 pub mod player;
+
+pub mod color;
+mod onboarding;
+mod map;
+
 
 struct SomeDreamApplication {
     rng: ThreadRng,
@@ -60,12 +63,14 @@ impl SomeDreamApplication {
 
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
+        // Start points - get later from Map with index 0
         let mut x: usize = 1;
         let mut y: usize = 7;
         let mut index: usize = 0;
+        let mut map_core = map::MapCore::initialize(self.rng);
 
         loop {
-            let map_options: map::MapOptions = map::point(index, x, y);
+            let map_options: map::MapOptions = map_core.point(index, x, y);
             let description = map_options.description;
             let mut minimap = map_options.minimap;
 

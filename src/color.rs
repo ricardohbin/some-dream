@@ -66,3 +66,8 @@ pub fn paint(color: Box<dyn Color>, pattern: &str, text: &str) -> String {
 
     color_out
 }
+
+pub fn paint_text(color: Box<dyn Color>, text: &str) -> String{
+    let color_text: String = color.pattern().replace("_", text);
+    color_text
+}
