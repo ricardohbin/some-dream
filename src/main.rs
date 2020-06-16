@@ -6,6 +6,7 @@ use std::env;
 pub mod render;
 pub mod interaction;
 pub mod player;
+pub mod attributes;
 
 pub mod color;
 mod onboarding;
@@ -34,7 +35,7 @@ impl SomeDreamApplication {
                 name: "Bin".to_string(),
                 role: player::Role::Fighter,
                 profile: player::Profile::Knight,
-                attributes: player::Attributes{
+                stats: attributes::Stats{
                     strength: 3,
                     agility: 3,
                     intelligence: 3,
@@ -44,7 +45,7 @@ impl SomeDreamApplication {
                     wealth: 3,
                     resistence: 3,
                 },
-                vital_points: player::VitalPoints{
+                vital_points: attributes::VitalPoints{
                     life: 6,
                     luck: 6,
                     cardio: 6,

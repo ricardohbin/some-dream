@@ -34,12 +34,12 @@ pub fn render_attributes(player: &Player) {
 
     output.push(render_block(format!(
     "Strenght: {} | Agility: {} | Intelligence: {} | Willpower: {}",
-    player.attributes.strength, player.attributes.agility, player.attributes.intelligence, player.attributes.will
+    player.stats.strength, player.stats.agility, player.stats.intelligence, player.stats.will
     ), String::from(" ")));
 
     output.push(render_block(format!(
     "Charisma: {} | Intimidation: {} | Wealth: {} | Resistence: {}",
-    player.attributes.charisma, player.attributes.intimidation, player.attributes.wealth, player.attributes.resistence
+    player.stats.charisma, player.stats.intimidation, player.stats.wealth, player.stats.resistence
     ), String::from(" ")));
 
     output.push(render_block(String::from("Vital Points"), String::from("=")));

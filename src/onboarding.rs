@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use super::player::*;
 use super::interaction;
 use super::render;
+use super::attributes::{Stats, VitalPoints};
 
 // used implictly by strum...
 use std::str::FromStr;
@@ -29,19 +30,19 @@ impl Onboarding {
         }
     }
 
-    fn calculate_vital_points(&mut self, attributes: &Attributes) -> VitalPoints {
+    fn calculate_vital_points(&mut self, stats: &Stats) -> VitalPoints {
         VitalPoints{
-            life: attributes.wealth + attributes.strength,
-            luck: attributes.agility + attributes.intimidation,
-            cardio: attributes.resistence + attributes.will,
-            social: attributes.charisma + attributes.intelligence,
+            life: stats.wealth + stats.strength,
+            luck: stats.agility + stats.intimidation,
+            cardio: stats.resistence + stats.will,
+            social: stats.charisma + stats.intelligence,
         }
     }
 
-    fn roll_status(&mut self, profile: Profile) -> Attributes {
+    fn roll_status(&mut self, profile: Profile) -> Stats {
         match profile {
             Profile::Knight => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::High),
                     agility: self.get_attributes(AttributesRanges::Horrible),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -53,7 +54,7 @@ impl Onboarding {
                 }
             },
             Profile::Warrior => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::High),
                     agility: self.get_attributes(AttributesRanges::Horrible),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -65,7 +66,7 @@ impl Onboarding {
                 }
             },
             Profile::Noble => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Horrible),
                     agility: self.get_attributes(AttributesRanges::High),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -77,7 +78,7 @@ impl Onboarding {
                 }
             },
             Profile::Rogue => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Horrible),
                     agility: self.get_attributes(AttributesRanges::High),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -89,7 +90,7 @@ impl Onboarding {
                 }
             },
             Profile::Mage => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::High),
@@ -101,7 +102,7 @@ impl Onboarding {
                 }
             },
             Profile::Warlock => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::High),
@@ -113,7 +114,7 @@ impl Onboarding {
                 }
             },
             Profile::Cleric => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::Horrible),
@@ -125,7 +126,7 @@ impl Onboarding {
                 }
             },
             Profile::WitchDoctor => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::High),
@@ -137,7 +138,7 @@ impl Onboarding {
                 }
             },
             Profile::Bard => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -149,7 +150,7 @@ impl Onboarding {
                 }
             },
             Profile::Templar => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -161,7 +162,7 @@ impl Onboarding {
                 }
             },
             Profile::Assassin => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -173,7 +174,7 @@ impl Onboarding {
                 }
             },
             Profile::Executioner => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -185,7 +186,7 @@ impl Onboarding {
                 }
             },
             Profile::Hunter => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -197,7 +198,7 @@ impl Onboarding {
                 }
             },
             Profile::Druid => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -209,7 +210,7 @@ impl Onboarding {
                 }
             },
             Profile::Barbarian => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Medium),
                     agility: self.get_attributes(AttributesRanges::Poor),
                     intelligence: self.get_attributes(AttributesRanges::Poor),
@@ -221,7 +222,7 @@ impl Onboarding {
                 }
             },
             Profile::Shaman => {
-                Attributes {
+                Stats {
                     strength: self.get_attributes(AttributesRanges::Poor),
                     agility: self.get_attributes(AttributesRanges::Medium),
                     intelligence: self.get_attributes(AttributesRanges::Medium),
@@ -334,15 +335,15 @@ impl Onboarding {
             profile_suggestions,
         ).as_str()).unwrap();
 
-        let attributes: Attributes = self.roll_status(profile);
+        let stats: Stats = self.roll_status(profile);
 
-        let vital_points: VitalPoints = self.calculate_vital_points(&attributes);
+        let vital_points: VitalPoints = self.calculate_vital_points(&stats);
 
         let player = Player {
             name,
             role,
             profile,
-            attributes,
+            stats,
             vital_points,
         };
 
