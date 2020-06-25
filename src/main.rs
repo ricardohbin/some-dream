@@ -7,6 +7,7 @@ pub mod render;
 pub mod interaction;
 pub mod player;
 pub mod attributes;
+pub mod monster;
 
 pub mod color;
 mod onboarding;

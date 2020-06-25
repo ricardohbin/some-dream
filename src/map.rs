@@ -4,6 +4,7 @@ use rand::Rng;
 use rand::rngs::ThreadRng;
 
 use super::color;
+use super::monster;
 
 const PLAYER: &str = "P";
 
@@ -17,7 +18,6 @@ pub struct MapOptions {
     pub index: usize,
 }
 
-#[derive(Debug)]
 pub struct Map {
     enterpoints: HashMap<usize, (usize, usize)>,
     exits: HashMap<usize, (usize, usize)>,
@@ -29,14 +29,20 @@ pub struct Map {
 #[derive(Debug, Clone)]
 struct Interaction {
     description: String,
+    monsters: Vec<monster::Monster>,
 }
 
+// TODO: move to interaction module - or create other
 impl Interaction {
     fn output(self) {
         println!("{}", self.description);
+        for monster in self.monsters {
+            println!("You see -> {}", monster.description);
+        }
     }
 }
 
+// Remove lazy_static e create all this in MapCore init
 lazy_static! {
     static ref MAPS: HashMap<usize, Map> = {
         // factory pattern to this - for while let's go in this way
@@ -48,16 +54,23 @@ lazy_static! {
 
         interactions0.insert("?".to_string(), vec!(
             Interaction{
-                description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here")
+                description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here"),
+                monsters: vec!(),
             },
             Interaction{
-                description: color::paint_text(Box::new(color::Red{}), "There's a flower here")
+                description: color::paint_text(Box::new(color::Red{}), "There's a flower here"),
+                monsters: vec!(
+                    monster::Monster::new(color::paint_text(Box::new(color::Blue{}), "A small imp appears"),
+                    1
+                )),
             },
             Interaction{
-                description: color::paint_text(Box::new(color::Gray{}), "There's a sword here")
+                description: color::paint_text(Box::new(color::Gray{}), "There's a sword here"),
+                monsters: vec!(),
             }
         ));
 
+        // TODO: random minimaps
         ent0.insert(0, (1, 7));
         ex0.insert(1, (12 ,1));
         m.insert(0, Map{
@@ -177,15 +190,15 @@ impl MapCore {
                         Some(map_points) => {
                             return self.point(map_index, map_points.0, map_points.1);
                         },
-                        None => panic!("No exit {} found at map #{}, {:?}", map_index, index, next_map),
+                        None => panic!("No exit {} found at map #{}", map_index, index),
                     }
                 }
             } else {
                 let interactions = map.interactions.get(position);
                 match interactions {
                     Some(interaction) => {
-                        let random = self.rng.gen_range(0, interaction.len());
-                        let interaction_random = interaction[random].clone();
+                        let interaction_random_range = self.rng.gen_range(0, interaction.len());
+                        let interaction_random = interaction[interaction_random_range].clone();
                         interaction_random.output();
                     },
                     None => panic!("Unknow caracter {}", position),
