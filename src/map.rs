@@ -238,7 +238,8 @@ impl MapCore {
                         let interactions = map.events.get(position);
                         match interactions {
                             Some(i) => {
-                                // let interaction_random_range = self.rng.gen_range(0, i.len());
+                                // when arena is ok and put this in DEBUG mode 
+                                //let interaction_random_range = self.rng.gen_range(0, i.len());
                                 let interaction_random_range = 1;
                                 let interaction_temp = i[interaction_random_range].clone();
                                 self.event_point.insert((index, x, y), interaction_temp);
