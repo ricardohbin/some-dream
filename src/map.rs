@@ -1,10 +1,12 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
-use rand::Rng;
 use rand::rngs::ThreadRng;
+use super::interaction;
+use super::player::*;
+use super::monster::*;
 
 use super::color;
-use super::monster;
+
 
 const PLAYER: &str = "P";
 
@@ -23,21 +25,47 @@ pub struct Map {
     exits: HashMap<usize, (usize, usize)>,
     description: &'static str,
     minimap: &'static str,
-    interactions: HashMap<String, Vec<Interaction>>,
+    events: HashMap<String, Vec<Event>>,
 }
 
 #[derive(Debug, Clone)]
-struct Interaction {
+struct Event {
+    // TODO: remove description - it is redundant
     description: String,
-    monsters: Vec<monster::Monster>,
+    monster: Option<Monster>,
+}
+
+//TODO: move this!
+fn arena(player: &mut Player, monster: &mut Monster) -> bool {
+    if monster.vital_points.life <= 0 {
+        return true;
+    }
+    println!("You meet an {}", monster.description);
+    let input: String = interaction::capture_input("What you will do?", "", "You choosed", vec!(
+        // TODO: actions to enum 
+        String::from("attack"),
+    ));
+
+    match input.as_str() {
+        "attack" => {
+            let hit = player.attack();
+            monster.vital_points.life -= hit;
+            println!("{:?}", monster);
+            arena(player, monster)
+        },
+        _ => {
+            panic!("What?");
+        }
+    }
 }
 
 // TODO: move to interaction module - or create other
-impl Interaction {
-    fn output(self) {
+impl Event {
+    fn output(self, player: &mut Player) {
         println!("{}", self.description);
-        for monster in self.monsters {
-            println!("You see -> {}", monster.description);
+
+        if let Some(mut m) = self.monster {
+            arena(player, &mut m);
         }
     }
 }
@@ -50,23 +78,23 @@ lazy_static! {
 
         let mut ent0: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut ex0: HashMap<usize, (usize, usize)>= HashMap::new();
-        let mut interactions0: HashMap<String, Vec<Interaction>> = HashMap::new();
+        let mut events0: HashMap<String, Vec<Event>> = HashMap::new();
 
-        interactions0.insert("?".to_string(), vec!(
-            Interaction{
+        events0.insert("?".to_string(), vec!(
+            Event{
                 description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here"),
-                monsters: vec!(),
+                monster: None,
             },
-            Interaction{
+            Event{
                 description: color::paint_text(Box::new(color::Red{}), "There's a flower here"),
-                monsters: vec!(
-                    monster::Monster::new(color::paint_text(Box::new(color::Blue{}), "A small imp appears"),
+                monster: Some(
+                    Monster::new(color::paint_text(Box::new(color::Blue{}), "A small imp"),
                     1
                 )),
             },
-            Interaction{
+            Event{
                 description: color::paint_text(Box::new(color::Gray{}), "There's a sword here"),
-                monsters: vec!(),
+                monster: None,
             }
         ));
 
@@ -86,7 +114,7 @@ lazy_static! {
                     ###",
         enterpoints: ent0,
         exits: ex0,
-        interactions: interactions0,
+        events: events0,
         });
 
         let mut ent1: HashMap<usize, (usize, usize)>= HashMap::new();
@@ -101,7 +129,7 @@ lazy_static! {
                   #############",
         enterpoints: ent1,
         exits: ex1,
-        interactions: HashMap::new()
+        events: HashMap::new()
         });
 
         let mut ent2: HashMap<usize, (usize, usize)>= HashMap::new();
@@ -120,15 +148,18 @@ lazy_static! {
                   ##########################################",
         enterpoints: ent2,
         exits: ex2,
-        interactions: HashMap::new()
+        events: HashMap::new()
         });
 
         m
     };
 }
 
+#[derive(Debug, Clone)]
 pub struct MapCore {
     rng: ThreadRng,
+    event_point: HashMap<(usize, usize, usize), Event>,
+    player: Player,
 }
 
 impl MapCore {
@@ -136,9 +167,11 @@ impl MapCore {
         value.to_string().replace(" ", "")
     }
 
-    pub fn initialize(rng: ThreadRng) -> Self {
+    pub fn initialize(rng: ThreadRng, player: Player) -> Self {
         Self {
             rng,
+            event_point: HashMap::new(),
+            player
         }
     }
 
@@ -194,15 +227,28 @@ impl MapCore {
                     }
                 }
             } else {
-                let interactions = map.interactions.get(position);
-                match interactions {
-                    Some(interaction) => {
-                        let interaction_random_range = self.rng.gen_range(0, interaction.len());
-                        let interaction_random = interaction[interaction_random_range].clone();
-                        interaction_random.output();
+                let actual_event_point = self.event_point.get(&(index, x, y));
+                let event: Event;
+                match actual_event_point {
+                    Some(i) => {
+                        event = i.clone();
                     },
-                    None => panic!("Unknow caracter {}", position),
+                    // Let's get a random one :D
+                    None => {
+                        let interactions = map.events.get(position);
+                        match interactions {
+                            Some(i) => {
+                                // let interaction_random_range = self.rng.gen_range(0, i.len());
+                                let interaction_random_range = 1;
+                                let interaction_temp = i[interaction_random_range].clone();
+                                self.event_point.insert((index, x, y), interaction_temp);
+                                event = i[interaction_random_range].clone();
+                            },
+                            None => panic!("Unknow caracter {}", position),
+                        }
+                    }
                 }
+                event.output(&mut self.player);
             }
         }
         

@@ -52,7 +52,7 @@ impl Monster {
             },
         }
 
-        return Self {
+        Self {
             description,
             level,
             stats,

@@ -32,7 +32,7 @@ impl SomeDreamApplication {
 
         render::render_splash_screen();
 
-        let _player = if self.is_debug_mode { player::Player{
+        let player = if self.is_debug_mode { player::Player{
                 name: "Bin".to_string(),
                 role: player::Role::Fighter,
                 profile: player::Profile::Knight,
@@ -69,7 +69,7 @@ impl SomeDreamApplication {
         let mut x: usize = 1;
         let mut y: usize = 7;
         let mut index: usize = 0;
-        let mut map_core = map::MapCore::initialize(self.rng);
+        let mut map_core = map::MapCore::initialize(self.rng, player);
 
         loop {
             let map_options: map::MapOptions = map_core.point(index, x, y);
