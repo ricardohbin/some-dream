@@ -55,7 +55,7 @@ pub fn render_attributes(player: &Player) {
 pub fn render_image_to_ansi(file_path: &str) {
     let path: &Path = Path::new(file_path);
     let img = image::open(path).unwrap();
-    let img_to_render = imageops::resize(&img, 32, 32, FilterType::Nearest);
+    let img_to_render = imageops::resize(&img, 16, 16, FilterType::Nearest);
     let width = img_to_render.width();
     let height = img_to_render.height();
     let mut output: Vec<String> = vec!();

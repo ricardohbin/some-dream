@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
+use rand::Rng;
 use rand::rngs::ThreadRng;
 use super::interaction;
 use super::player::*;
@@ -29,7 +30,7 @@ pub struct Map {
 }
 
 #[derive(Debug, Clone)]
-struct Event {
+pub struct Event {
     // TODO: remove description - it is redundant
     description: String,
     monster: Option<Monster>,
@@ -38,16 +39,19 @@ struct Event {
 //TODO: move this!
 fn arena(player: &mut Player, monster: &mut Monster) -> bool {
     if monster.vital_points.life <= 0 {
+        println!("The monster is dead!");
+        println!("{:?}", monster);
         return true;
     }
+    println!("{:?}", monster);
     println!("You meet an {}", monster.description);
     let input: String = interaction::capture_input("What you will do?", "", "You choosed", vec!(
         // TODO: actions to enum 
-        String::from("attack"),
+        String::from("kill"),
     ));
 
     match input.as_str() {
-        "attack" => {
+        "kill" => {
             let hit = player.attack();
             monster.vital_points.life -= hit;
             println!("{:?}", monster);
@@ -55,17 +59,6 @@ fn arena(player: &mut Player, monster: &mut Monster) -> bool {
         },
         _ => {
             panic!("What?");
-        }
-    }
-}
-
-// TODO: move to interaction module - or create other
-impl Event {
-    fn output(self, player: &mut Player) {
-        println!("{}", self.description);
-
-        if let Some(mut m) = self.monster {
-            arena(player, &mut m);
         }
     }
 }
@@ -88,7 +81,7 @@ lazy_static! {
             Event{
                 description: color::paint_text(Box::new(color::Red{}), "There's a flower here"),
                 monster: Some(
-                    Monster::new(color::paint_text(Box::new(color::Blue{}), "A small imp"),
+                    Monster::new(Box::new(Skeleton{}),
                     1
                 )),
             },
@@ -160,6 +153,7 @@ pub struct MapCore {
     rng: ThreadRng,
     event_point: HashMap<(usize, usize, usize), Event>,
     player: Player,
+    is_debug: bool,
 }
 
 impl MapCore {
@@ -167,11 +161,12 @@ impl MapCore {
         value.to_string().replace(" ", "")
     }
 
-    pub fn initialize(rng: ThreadRng, player: Player) -> Self {
+    pub fn initialize(rng: ThreadRng, player: Player, is_debug: bool) -> Self {
         Self {
             rng,
             event_point: HashMap::new(),
-            player
+            player,
+            is_debug,
         }
     }
 
@@ -228,28 +223,41 @@ impl MapCore {
                 }
             } else {
                 let actual_event_point = self.event_point.get(&(index, x, y));
-                let event: Event;
                 match actual_event_point {
-                    Some(i) => {
-                        event = i.clone();
+                    Some(event) => {
+                        if self.is_debug {
+                            println!("REPLAY!!!");
+                        }
+                        if let Some(m) = event.monster {
+                            println!("You see a dead {}", m.description);
+                        }
+
                     },
                     // Let's get a random one :D
                     None => {
                         let interactions = map.events.get(position);
                         match interactions {
                             Some(i) => {
-                                // when arena is ok and put this in DEBUG mode 
-                                //let interaction_random_range = self.rng.gen_range(0, i.len());
-                                let interaction_random_range = 1;
+                                let mut interaction_random_range: usize;
+                                interaction_random_range = self.rng.gen_range(0, i.len());
+
+                                if self.is_debug {
+                                    println!("FIRST TIME!");
+                                    interaction_random_range = 1;
+                                }
+
                                 let interaction_temp = i[interaction_random_range].clone();
                                 self.event_point.insert((index, x, y), interaction_temp);
-                                event = i[interaction_random_range].clone();
+                                let event = &i[interaction_random_range];
+                                let monster = event.monster;
+                                if let Some(mut m) = monster {
+                                    arena(&mut self.player, &mut m);
+                                }                                
                             },
                             None => panic!("Unknow caracter {}", position),
                         }
                     }
                 }
-                event.output(&mut self.player);
             }
         }
         

@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Stats {
     pub strength: i8,
     pub agility: i8,
@@ -10,7 +10,7 @@ pub struct Stats {
     pub resistence: i8,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct VitalPoints {
     pub life: i8,
     pub luck: i8,

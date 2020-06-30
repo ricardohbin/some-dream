@@ -1,15 +1,27 @@
 use super::attributes::{Stats, VitalPoints};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Monster {
-    pub description: String,
     level: i8,
     pub stats: Stats,
     pub vital_points: VitalPoints,
+    pub description: &'static str,
+}
+
+pub struct Skeleton {}
+
+pub trait MonsterType {
+    fn description(&self) -> &'static str;
+}
+
+impl MonsterType for Skeleton {
+    fn description(&self) -> &'static str {
+        "A terrible skeleton with sword and shiel"
+    }
 }
 
 impl Monster {
-    pub fn new(description: String, level: i8) -> Self {
+    pub fn new(monster: Box<dyn MonsterType>, level: i8) -> Self {
         let stats;
         let vital_points;
         // TODO: Random!
@@ -53,7 +65,7 @@ impl Monster {
         }
 
         Self {
-            description,
+            description: monster.description(),
             level,
             stats,
             vital_points,

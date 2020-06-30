@@ -69,7 +69,7 @@ impl SomeDreamApplication {
         let mut x: usize = 1;
         let mut y: usize = 7;
         let mut index: usize = 0;
-        let mut map_core = map::MapCore::initialize(self.rng, player);
+        let mut map_core = map::MapCore::initialize(self.rng, player, self.is_debug_mode, );
 
         loop {
             let map_options: map::MapOptions = map_core.point(index, x, y);

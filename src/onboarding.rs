@@ -30,7 +30,7 @@ impl Onboarding {
         }
     }
 
-    fn calculate_vital_points(&mut self, stats: &Stats) -> VitalPoints {
+    fn calculate_vital_points(&mut self, stats: Stats) -> VitalPoints {
         VitalPoints{
             life: stats.wealth + stats.strength,
             luck: stats.agility + stats.intimidation,
@@ -337,7 +337,7 @@ impl Onboarding {
 
         let stats: Stats = self.roll_status(profile);
 
-        let vital_points: VitalPoints = self.calculate_vital_points(&stats);
+        let vital_points: VitalPoints = self.calculate_vital_points(stats);
 
         let player = Player {
             name,
