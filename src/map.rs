@@ -19,6 +19,7 @@ pub struct MapOptions {
     pub x: usize,
     pub y: usize,
     pub index: usize,
+    pub is_game_over: bool,
 }
 
 pub struct Map {
@@ -36,31 +37,69 @@ pub struct Event {
     monster: Option<Monster>,
 }
 
-//TODO: move this!
-fn arena(player: &mut Player, monster: &mut Monster) -> bool {
+//TODO: move this to module Arena and pass the debug/rng to it!
+fn arena(player: &mut Player, monster: &mut Monster, is_player_action: bool) -> bool {
     if monster.vital_points.life <= 0 {
         println!("The monster is dead!");
         println!("{:?}", monster);
         return true;
     }
-    println!("{:?}", monster);
+
+    if player.vital_points.life <= 0 {
+        println!("You are DEAD! Nooooo....");
+        println!("{:?}", player);
+        return false;
+    }
+
+    if is_player_action {
+        println!("You turn!");
+        let input: String = interaction::capture_input("What attack will you perform?", "", "You choosed", vec!(
+            // TODO: actions to enum by class
+            String::from("bash"),
+        ));
+    
+        match input.as_str() {
+            "bash" => {
+                let hit = player.attack();
+                monster.vital_points.life -= hit;
+                println!("{:?}", monster);
+                arena(player, monster, !is_player_action)
+            },
+            _ => {
+                panic!("What?");
+            }
+        }
+    } else {
+        println!("The monster {} turn", monster.description);
+        let hit = monster.attack();
+        player.vital_points.life -= hit;
+        arena(player, monster, !is_player_action)
+    }
+}
+
+fn pre_arena(player: &mut Player, monster: &mut Monster) -> bool {
     println!("You meet an {}\n", monster.description);
+
+    // TODO: Aggro monsters! Without this prompt
     let input: String = interaction::capture_input("What you will do?", "", "You choosed", vec!(
         // TODO: actions to enum 
-        String::from("kill"),
+        String::from("start"),
+        String::from("nothing")
     ));
 
     match input.as_str() {
-        "kill" => {
-            let hit = player.attack();
-            monster.vital_points.life -= hit;
-            println!("{:?}", monster);
-            arena(player, monster)
+        "start" => {
+            let is_player_action = player.stats.agility >= monster.stats.agility;
+            arena(player, monster, is_player_action)
         },
+        "nothing" => {
+            true
+        }
         _ => {
             panic!("What?");
         }
     }
+    
 }
 
 // Remove lazy_static e create all this in MapCore init
@@ -152,7 +191,7 @@ lazy_static! {
 pub struct MapCore {
     rng: ThreadRng,
     event_point: HashMap<(usize, usize, usize), Event>,
-    player: Player,
+    pub player: Player,
     is_debug: bool,
 }
 
@@ -174,6 +213,7 @@ impl MapCore {
         // Ignoring first `"` in split
         // TODO: better split to this, to use x as is
         let column = x + 1;
+        let mut is_game_over = false;
 
         let map_string;
         let map;
@@ -232,8 +272,12 @@ impl MapCore {
 
                         println!("{}", event.description);
 
-                        if let Some(m) = event.monster.clone() {
-                            println!("You see a dead {}", m.description);
+                        if let Some(mut m) = event.monster.clone() {
+                            if m.vital_points.life <= 0 {
+                                println!("You see a dead {}", m.description);
+                            } else {
+                                pre_arena(&mut self.player, &mut m);
+                            }
                         }
 
                     },
@@ -258,15 +302,19 @@ impl MapCore {
                                 println!("{}", event.description);
 
                                 if let Some(mut m) = monster {
-                                    arena(&mut self.player, &mut m);
+                                    let is_player_alive = pre_arena(&mut self.player, &mut m);
                                     
                                     // Override previous state when exists fight
                                     // for now only fights to DEATH will be allowed
                                     // TODO: escape using skills, etc
-                                    self.event_point.insert((index, x, y), Event{
-                                        description: event.description.clone(),
-                                        monster: Option::from(m)
-                                    });
+                                    if is_player_alive {
+                                        self.event_point.insert((index, x, y), Event{
+                                            description: event.description.clone(),
+                                            monster: Option::from(m)
+                                        });
+                                    } else {
+                                        is_game_over = true;
+                                    }
                                 }                                
                             },
                             None => panic!("Unknow caracter {}", position),
@@ -310,6 +358,7 @@ impl MapCore {
             x,
             y,
             index,
+            is_game_over,
         }
     }
 }

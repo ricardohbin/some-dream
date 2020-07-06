@@ -9,6 +9,12 @@ pub struct Monster {
     pub description: String,
 }
 
+impl Monster {
+    pub fn attack(&self) -> i8 {
+        self.stats.strength
+    } 
+}
+
 pub struct Skeleton {}
 
 pub trait MonsterType {

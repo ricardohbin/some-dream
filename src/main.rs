@@ -33,7 +33,7 @@ impl SomeDreamApplication {
         render::render_splash_screen();
 
         let player = if self.is_debug_mode { player::Player{
-                name: "Bin".to_string(),
+                name: String::from("Bin"),
                 role: player::Role::Fighter,
                 profile: player::Profile::Knight,
                 stats: attributes::Stats{
@@ -66,9 +66,14 @@ impl SomeDreamApplication {
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
         // Start points - get later from Map with index 0
+        // TODO: FIX THIS
         let mut x: usize = 1;
         let mut y: usize = 7;
         let mut index: usize = 0;
+
+        // The player is borrowed to mapcore until the end of program. Let's keep a copy here in this scope
+        let player_name = player.name.clone();
+
         let mut map_core = map::MapCore::initialize(self.rng, player, self.is_debug_mode, );
 
         loop {
@@ -88,6 +93,11 @@ impl SomeDreamApplication {
             x = map_options.x;
             y = map_options.y;
             index = map_options.index;
+
+            if map_options.is_game_over {
+                println!("Your journey ends here. Sorry {}", player_name);
+                return;
+            }
 
             let direction: String = interaction::capture_input("What path you go?", "", "You choose", map_options.directions);
 

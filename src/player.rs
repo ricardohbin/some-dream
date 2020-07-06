@@ -13,7 +13,7 @@ pub struct Player {
 impl Player {
     pub fn attack(&self) -> i8 {
         self.stats.strength
-    } 
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
