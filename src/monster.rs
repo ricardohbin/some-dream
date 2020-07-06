@@ -1,22 +1,23 @@
 use super::attributes::{Stats, VitalPoints};
+use super::color;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Monster {
     level: i8,
     pub stats: Stats,
     pub vital_points: VitalPoints,
-    pub description: &'static str,
+    pub description: String,
 }
 
 pub struct Skeleton {}
 
 pub trait MonsterType {
-    fn description(&self) -> &'static str;
+    fn description(&self) -> String;
 }
 
 impl MonsterType for Skeleton {
-    fn description(&self) -> &'static str {
-        "A terrible skeleton with sword and shiel"
+    fn description(&self) -> String {
+        color::paint_text(Box::new(color::Gray{}), "An skeleton with sword and shield")
     }
 }
 

@@ -44,7 +44,7 @@ fn arena(player: &mut Player, monster: &mut Monster) -> bool {
         return true;
     }
     println!("{:?}", monster);
-    println!("You meet an {}", monster.description);
+    println!("You meet an {}\n", monster.description);
     let input: String = interaction::capture_input("What you will do?", "", "You choosed", vec!(
         // TODO: actions to enum 
         String::from("kill"),
@@ -227,8 +227,12 @@ impl MapCore {
                     Some(event) => {
                         if self.is_debug {
                             println!("REPLAY!!!");
+                            println!("{:?}", event);
                         }
-                        if let Some(m) = event.monster {
+
+                        println!("{}", event.description);
+
+                        if let Some(m) = event.monster.clone() {
                             println!("You see a dead {}", m.description);
                         }
 
@@ -249,9 +253,20 @@ impl MapCore {
                                 let interaction_temp = i[interaction_random_range].clone();
                                 self.event_point.insert((index, x, y), interaction_temp);
                                 let event = &i[interaction_random_range];
-                                let monster = event.monster;
+                                let monster = event.monster.clone();
+
+                                println!("{}", event.description);
+
                                 if let Some(mut m) = monster {
                                     arena(&mut self.player, &mut m);
+                                    
+                                    // Override previous state when exists fight
+                                    // for now only fights to DEATH will be allowed
+                                    // TODO: escape using skills, etc
+                                    self.event_point.insert((index, x, y), Event{
+                                        description: event.description.clone(),
+                                        monster: Option::from(m)
+                                    });
                                 }                                
                             },
                             None => panic!("Unknow caracter {}", position),
