@@ -5,9 +5,7 @@ use rand::rngs::ThreadRng;
 use super::player::*;
 use super::monster::*;
 use super::arena;
-
 use super::color;
-
 
 const PLAYER: &str = "P";
 
@@ -19,7 +17,7 @@ pub struct MapOptions {
     pub x: usize,
     pub y: usize,
     pub index: usize,
-    pub is_game_over: bool,
+    pub is_player_alive: bool,
 }
 
 pub struct Map {
@@ -50,7 +48,10 @@ lazy_static! {
         events0.insert("?".to_string(), vec!(
             Event{
                 description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here"),
-                monster: None,
+                monster: Some(
+                    Monster::new(Box::new(Goblin{}),
+                    1
+                )),
             },
             Event{
                 description: color::paint_text(Box::new(color::Red{}), "There's a flower here"),
@@ -61,7 +62,10 @@ lazy_static! {
             },
             Event{
                 description: color::paint_text(Box::new(color::Gray{}), "There's a sword here"),
-                monster: None,
+                monster: Some(
+                    Monster::new(Box::new(Ogre{}),
+                    1
+                )),
             }
         ));
 
@@ -146,14 +150,14 @@ impl MapCore {
 
     fn prepare_arena(&mut self, m: &mut Monster) -> bool {
         let arena = arena::Arena::new(self.rng, self.is_debug);
-        return arena.prepare(&mut self.player, m)
+        arena.prepare(&mut self.player, m)
     }
 
     pub fn point(&mut self, index: usize, x: usize, y: usize) -> MapOptions {
         // Ignoring first `"` in split
         // TODO: better split to this, to use x as is
         let column = x + 1;
-        let mut is_game_over = false;
+        let mut is_player_alive = true;
 
         let map_string;
         let map;
@@ -216,7 +220,7 @@ impl MapCore {
                             if m.vital_points.life <= 0 {
                                 println!("You see a dead {}", m.description);
                             } else {
-                                is_game_over = self.prepare_arena(&mut m);
+                                is_player_alive = self.prepare_arena(&mut m);
                             }
                         }
 
@@ -231,7 +235,8 @@ impl MapCore {
 
                                 if self.is_debug {
                                     println!("FIRST TIME!");
-                                    interaction_random_range = 1;
+                                    // TO DEBUG purposes in this early stage 
+                                    // interaction_random_range = 2;
                                 }
 
                                 let interaction_temp = i[interaction_random_range].clone();
@@ -242,12 +247,12 @@ impl MapCore {
                                 println!("{}", event.description);
 
                                 if let Some(mut m) = monster {
-                                    let is_game_over = self.prepare_arena(&mut m);
+                                    is_player_alive = self.prepare_arena(&mut m);
                                     
                                     // Override previous state when exists fight
                                     // for now only fights to DEATH will be allowed
                                     // TODO: escape using skills, etc
-                                    if !is_game_over {
+                                    if is_player_alive {
                                         self.event_point.insert((index, x, y), Event{
                                             description: event.description.clone(),
                                             monster: Option::from(m)
@@ -296,7 +301,7 @@ impl MapCore {
             x,
             y,
             index,
-            is_game_over,
+            is_player_alive,
         }
     }
 }
