@@ -12,7 +12,7 @@ pub struct Monster {
 impl Monster {
     pub fn attack(&self) -> i8 {
         self.stats.strength
-    } 
+    }
 }
 
 pub struct Skeleton {}

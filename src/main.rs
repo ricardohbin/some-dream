@@ -8,6 +8,7 @@ pub mod interaction;
 pub mod player;
 pub mod attributes;
 pub mod monster;
+pub mod arena;
 
 pub mod color;
 mod onboarding;

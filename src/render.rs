@@ -1,4 +1,5 @@
 use super::player::Player;
+use super::attributes::VitalPoints;
 
 use std::fs;
 use image::imageops;
@@ -50,6 +51,15 @@ pub fn render_attributes(player: &Player) {
     ), String::from(" ")));
 
     print!("{}", output.join("\n"));
+}
+
+pub fn render_mini_stats(vital_points: VitalPoints) {
+    let mut output: Vec<String> = vec!();
+    output.push(format!(
+    "<Life: {} | Luck: {} | Cardio: {} | Social: {}> ",
+    vital_points.life, vital_points.luck, vital_points.cardio, vital_points.social
+    ));
+    print!("{}", output.join(""))
 }
 
 pub fn render_image_to_ansi(file_path: &str) {
