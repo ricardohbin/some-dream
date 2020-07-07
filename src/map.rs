@@ -144,6 +144,11 @@ impl MapCore {
         }
     }
 
+    fn prepare_arena(&mut self, m: &mut Monster) -> bool {
+        let arena = arena::Arena::new(self.rng, self.is_debug);
+        return arena.prepare(&mut self.player, m)
+    }
+
     pub fn point(&mut self, index: usize, x: usize, y: usize) -> MapOptions {
         // Ignoring first `"` in split
         // TODO: better split to this, to use x as is
@@ -211,10 +216,7 @@ impl MapCore {
                             if m.vital_points.life <= 0 {
                                 println!("You see a dead {}", m.description);
                             } else {
-                                let arena = arena::Arena::new(self.rng, self.is_debug);
-                                if !arena.prepare(&mut self.player, &mut m) {
-                                    is_game_over = true;
-                                }
+                                is_game_over = self.prepare_arena(&mut m);
                             }
                         }
 
@@ -240,19 +242,16 @@ impl MapCore {
                                 println!("{}", event.description);
 
                                 if let Some(mut m) = monster {
-                                    let arena = arena::Arena::new(self.rng, self.is_debug);
-                                    let is_player_alive = arena.prepare(&mut self.player, &mut m);
+                                    let is_game_over = self.prepare_arena(&mut m);
                                     
                                     // Override previous state when exists fight
                                     // for now only fights to DEATH will be allowed
                                     // TODO: escape using skills, etc
-                                    if is_player_alive {
+                                    if !is_game_over {
                                         self.event_point.insert((index, x, y), Event{
                                             description: event.description.clone(),
                                             monster: Option::from(m)
                                         });
-                                    } else {
-                                        is_game_over = true;
                                     }
                                 }                                
                             },
