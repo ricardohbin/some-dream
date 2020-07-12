@@ -75,7 +75,9 @@ impl SomeDreamApplication {
         // The player is borrowed to mapcore until the end of program. Let's keep a copy here in this scope
         let player_name = player.name.clone();
 
-        let mut map_core = map::MapCore::initialize(self.rng, player, self.is_debug_mode);
+        let mut map_core = map::MapCore::new(self.rng, player, self.is_debug_mode);
+
+        map_core.generate_world();
 
         loop {
             let map_options: map::MapOptions = map_core.point(index, x, y);

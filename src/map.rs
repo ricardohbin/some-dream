@@ -1,4 +1,3 @@
-use lazy_static::lazy_static;
 use std::collections::HashMap;
 use rand::Rng;
 use rand::rngs::ThreadRng;
@@ -20,6 +19,7 @@ pub struct MapOptions {
     pub is_player_alive: bool,
 }
 
+#[derive(Debug, Clone)]
 pub struct Map {
     enterpoints: HashMap<usize, (usize, usize)>,
     exits: HashMap<usize, (usize, usize)>,
@@ -35,9 +35,31 @@ pub struct Event {
     monster: Option<Monster>,
 }
 
-// Remove lazy_static e create all this in MapCore init
-lazy_static! {
-    static ref MAPS: HashMap<usize, Map> = {
+#[derive(Debug, Clone)]
+pub struct MapCore {
+    rng: ThreadRng,
+    event_point: HashMap<(usize, usize, usize), Event>,
+    pub player: Player,
+    is_debug: bool,
+    world: HashMap<usize, Map>,
+}
+
+impl MapCore {
+    fn clean_white_spaces(&self, value: &str) -> String {
+        value.to_string().replace(" ", "")
+    }
+
+    pub fn new(rng: ThreadRng, player: Player, is_debug: bool) -> Self {
+        Self {
+            rng,
+            event_point: HashMap::new(),
+            player,
+            is_debug,
+            world: HashMap::new(),
+        }
+    }
+
+    pub fn generate_world(&mut self) {
         // factory pattern to this - for while let's go in this way
         let mut m: HashMap<usize, Map> = HashMap::new();
 
@@ -122,30 +144,7 @@ lazy_static! {
         events: HashMap::new()
         });
 
-        m
-    };
-}
-
-#[derive(Debug, Clone)]
-pub struct MapCore {
-    rng: ThreadRng,
-    event_point: HashMap<(usize, usize, usize), Event>,
-    pub player: Player,
-    is_debug: bool,
-}
-
-impl MapCore {
-    fn clean_white_spaces(&self, value: &str) -> String {
-        value.to_string().replace(" ", "")
-    }
-
-    pub fn initialize(rng: ThreadRng, player: Player, is_debug: bool) -> Self {
-        Self {
-            rng,
-            event_point: HashMap::new(),
-            player,
-            is_debug,
-        }
+        self.world = m;
     }
 
     fn prepare_arena(&mut self, m: &mut Monster) -> bool {
@@ -161,8 +160,11 @@ impl MapCore {
 
         let map_string;
         let map;
+        let world = self.world.clone();
 
-        match MAPS.get(&index) {
+        let current_world = world.get(&index);
+
+        match current_world {
             Some(m) => {
                 map = m;
                 // removing extra spaces
@@ -184,7 +186,7 @@ impl MapCore {
             let result_change_map: Result<usize, std::num::ParseIntError> = position.parse::<usize>();
             if let Ok(map_index) = result_change_map {
                 let next_map;
-                match MAPS.get(&map_index) {
+                match world.get(&map_index) {
                     Some(m) => {
                         next_map = m;
                     },
@@ -252,6 +254,7 @@ impl MapCore {
                                     // Override previous state when exists fight
                                     // for now only fights to DEATH will be allowed
                                     // TODO: escape using skills, etc
+
                                     if is_player_alive {
                                         self.event_point.insert((index, x, y), Event{
                                             description: event.description.clone(),
