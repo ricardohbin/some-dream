@@ -66,18 +66,18 @@ impl SomeDreamApplication {
 
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
 
-        // Start points - get later from Map with index 0
-        // TODO: FIX THIS
-        let mut x: usize = 1;
-        let mut y: usize = 7;
-        let mut index: usize = 0;
-
         // The player is borrowed to mapcore until the end of program. Let's keep a copy here in this scope
         let player_name = player.name.clone();
 
         let mut map_core = map::MapCore::new(self.rng, player, self.is_debug_mode);
 
         map_core.generate_world();
+
+        // Start points - get later from Map with index 0
+        // TODO: FIX THIS
+        let mut x: usize = 1;
+        let mut y: usize = 1;
+        let mut index: usize = 0;
 
         loop {
             let map_options: map::MapOptions = map_core.point(index, x, y);

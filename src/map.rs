@@ -24,7 +24,7 @@ pub struct Map {
     enterpoints: HashMap<usize, (usize, usize)>,
     exits: HashMap<usize, (usize, usize)>,
     description: &'static str,
-    minimap: &'static str,
+    minimap: String,
     events: HashMap<String, Vec<Event>>,
 }
 
@@ -59,15 +59,81 @@ impl MapCore {
         }
     }
 
+    fn generate_map_seed(&mut self, index: &str, interactions: usize, range_x: (usize, usize), range_y: (usize, usize), possible_events: Vec<Event>) -> Map {
+        let width = self.rng.gen_range(range_x.0, range_x.1);
+        let height = self.rng.gen_range(range_y.0, range_y.1);
+        let mut map = String::from("");
+
+        let mut total_points = (width - 2) * (height - 2);
+        let mut possible_points = interactions;
+        let uindex: usize = index.parse().unwrap();
+
+        let mut ent: HashMap<usize, (usize, usize)>= HashMap::new();
+        let mut exits: HashMap<usize, (usize, usize)>= HashMap::new();
+
+        for _y in 0..height {
+            for _x in 0..width {
+
+                if _x == 0 && _y == 1 {
+                    if uindex > 0 {
+                        map.push_str((uindex - 1).to_string().as_str());
+                    } else {
+                        map.push_str("#");
+                    }
+                    // + one more X to right in scenario ->>>
+                    ent.insert(uindex, (_x + 1, _y));
+                    continue;
+                }
+
+                if _x == width - 1 && _y == height - 2 {
+                    map.push_str((uindex + 1).to_string().as_str());
+                    // - one more X to right in scenario <<<-
+                    exits.insert(uindex + 1, (_x - 1, _y));
+                    continue;
+                }
+
+                if _y == 0 || _y == height - 1 {
+                    map.push_str("#");
+                    continue;
+                }
+                if _x == 0 || _x == width - 1 {
+                    map.push_str("#");
+                    continue;
+                }
+
+                if total_points == 0 || (self.rng.gen_range(0, total_points) == 0 && possible_points > 0) {
+                    map.push_str("?");
+                    possible_points -= 1;
+                } else {
+                    total_points -= 1;
+                    map.push_str(".");
+                }
+            }
+            map.push_str("\n");
+        }
+
+
+        let mut events: HashMap<String, Vec<Event>> = HashMap::new();
+        events.insert("?".to_string(), possible_events);
+
+        let map = Map {
+            description: "a",
+            minimap: map,
+            enterpoints: ent,
+            events,
+            exits,
+        };
+
+        if self.is_debug {
+            println!("{:?}", map);
+        }
+        
+        map
+    }
+
     pub fn generate_world(&mut self) {
-        // factory pattern to this - for while let's go in this way
         let mut m: HashMap<usize, Map> = HashMap::new();
-
-        let mut ent0: HashMap<usize, (usize, usize)>= HashMap::new();
-        let mut ex0: HashMap<usize, (usize, usize)>= HashMap::new();
-        let mut events0: HashMap<String, Vec<Event>> = HashMap::new();
-
-        events0.insert("?".to_string(), vec!(
+        m.insert(0, self.generate_map_seed("0", 1, (8, 10), (5, 6), vec!(
             Event{
                 description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here"),
                 monster: Some(
@@ -89,60 +155,9 @@ impl MapCore {
                     1
                 )),
             }
-        ));
-
-        // TODO: random minimaps
-        ent0.insert(0, (1, 7));
-        ex0.insert(1, (12 ,1));
-        m.insert(0, Map{
-        description: "This is you starting point. You are seeing a wide open corridor. There are paints over the walls. \nYou look at the windows, there is a red sky outside.\nYou only have an option, straight forward.",
-        minimap:   "##############
-                    #............1
-                    #.############
-                    #.#
-                    #?#
-                    #.#
-                    #.#
-                    #.#
-                    ###",
-        enterpoints: ent0,
-        exits: ex0,
-        events: events0,
-        });
-
-        let mut ent1: HashMap<usize, (usize, usize)>= HashMap::new();
-        let mut ex1: HashMap<usize, (usize, usize)>= HashMap::new();
-        ent1.insert(1, (1, 1));
-        ex1.insert(2, (11 ,2));
-        m.insert(1, Map{
-        description: "This is the second room! Description soon....",
-        minimap: "#############
-                  0...........#
-                  #........?..2
-                  #############",
-        enterpoints: ent1,
-        exits: ex1,
-        events: HashMap::new()
-        });
-
-        let mut ent2: HashMap<usize, (usize, usize)>= HashMap::new();
-        let mut ex2: HashMap<usize, (usize, usize)>= HashMap::new();
-        ent2.insert(2, (1, 6));
-        ex2.insert(1, (3, 3));
-        m.insert(2, Map{
-        description: "This is a strange village. There are some points of interest. Will you check them?",
-        minimap: "##########################################
-                  #........................................#
-                  #........................................#
-                  #...........?..............?.............#
-                  #........................................#
-                  #.....?..................................#
-                  1........................................#
-                  ##########################################",
-        enterpoints: ent2,
-        exits: ex2,
-        events: HashMap::new()
-        });
+        )));
+        m.insert(1, self.generate_map_seed("1", 0, (30, 40), (5, 6), vec!()));
+        m.insert(2, self.generate_map_seed("2", 0, (50, 80), (5, 6), vec!()));
 
         self.world = m;
     }
@@ -168,7 +183,7 @@ impl MapCore {
             Some(m) => {
                 map = m;
                 // removing extra spaces
-                map_string = self.clean_white_spaces(m.minimap);
+                map_string = self.clean_white_spaces(&m.minimap.to_string());
             },
             None => panic!("No map match with the key {} - ", index),
         }
@@ -193,6 +208,7 @@ impl MapCore {
                     None => panic!("No map match with the key {} - ", index),
                 }
                 if index < map_index {
+                    println!("{}{}???", index, map_index);
                     match next_map.enterpoints.get(&map_index) {
                         Some(map_points) => {
                             return self.point(map_index, map_points.0, map_points.1);
@@ -200,6 +216,7 @@ impl MapCore {
                         None => panic!("No enterpoint {} found at map #{}", map_index, index),
                     }
                 } else {
+                    println!("{}{}!!!", index, map_index);
                     match next_map.exits.get(&index) {
                         Some(map_points) => {
                             return self.point(map_index, map_points.0, map_points.1);
