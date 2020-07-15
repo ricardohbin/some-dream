@@ -1,5 +1,8 @@
+use std::collections::HashMap;
 use super::attributes::{Stats, VitalPoints};
 use super::color;
+use rand::Rng;
+use rand::rngs::ThreadRng;
 
 #[derive(Debug, Clone)]
 pub struct Monster {
@@ -14,6 +17,35 @@ impl Monster {
         self.stats.strength
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct MonsterFactory {
+    rng: ThreadRng,
+    monsters: HashMap<usize, Vec<Option<Monster>>>,
+}
+
+impl MonsterFactory {
+    pub fn new(rng: ThreadRng) -> Self {
+        let mut monsters = HashMap::new();
+        // monster possible by area
+        monsters.insert(0, vec!(
+            Some(Monster::new(Box::new(Goblin{}), 1)),
+            Some(Monster::new(Box::new(Skeleton{}), 1)),
+            Some(Monster::new(Box::new(Ogre{}), 1)),
+        ));
+        Self {
+            rng,
+            monsters
+        }
+    }
+    pub fn generate(&mut self, level: usize) -> Option<Monster> {
+        // TODO: safe unwrap
+        let monsters = self.monsters.get(&level).unwrap();
+        let random = self.rng.gen_range(0, monsters.len());
+        monsters[random].clone()
+    }
+}
+
 
 pub struct Skeleton {}
 pub struct Goblin {}
@@ -115,3 +147,4 @@ impl Monster {
         }
     }
 }
+

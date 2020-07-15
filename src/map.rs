@@ -4,9 +4,8 @@ use rand::rngs::ThreadRng;
 use super::player::*;
 use super::monster::*;
 use super::arena;
-use super::color;
 
-const PLAYER: &str = "P";
+const PLAYER: &str = "\u{001b}[38;5;51m@\u{001b}[0m";
 
 #[derive(Debug)]
 pub struct MapOptions {
@@ -25,13 +24,11 @@ pub struct Map {
     exits: HashMap<usize, (usize, usize)>,
     description: &'static str,
     minimap: String,
-    events: HashMap<String, Vec<Event>>,
+    events: HashMap<String, Event>,
 }
 
 #[derive(Debug, Clone)]
 pub struct Event {
-    // TODO: remove description - it is redundant
-    description: String,
     monster: Option<Monster>,
 }
 
@@ -59,7 +56,7 @@ impl MapCore {
         }
     }
 
-    fn generate_map_seed(&mut self, index: &str, interactions: usize, range_x: (usize, usize), range_y: (usize, usize), possible_events: Vec<Event>) -> Map {
+    fn generate_map_seed(&mut self, index: &str, interactions: usize, range_x: (usize, usize), range_y: (usize, usize), monster: Option<Monster>) -> Map {
         let width = self.rng.gen_range(range_x.0, range_x.1);
         let height = self.rng.gen_range(range_y.0, range_y.1);
         let mut map = String::from("");
@@ -73,6 +70,8 @@ impl MapCore {
 
         for _y in 0..height {
             for _x in 0..width {
+                // First place that player enter in map - no encounters here
+                let is_entrypoint_slot = _x == 1 && _y == 1;
 
                 if _x == 0 && _y == 1 {
                     if uindex > 0 {
@@ -101,7 +100,7 @@ impl MapCore {
                     continue;
                 }
 
-                if total_points == 0 || (self.rng.gen_range(0, total_points) == 0 && possible_points > 0) {
+                if !is_entrypoint_slot && total_points == 0 || (self.rng.gen_range(0, total_points) == 0 && possible_points > 0) {
                     map.push_str("?");
                     possible_points -= 1;
                 } else {
@@ -113,11 +112,14 @@ impl MapCore {
         }
 
 
-        let mut events: HashMap<String, Vec<Event>> = HashMap::new();
-        events.insert("?".to_string(), possible_events);
+        let mut events = HashMap::new();
+        events.insert("?".to_string(), Event {
+            monster
+        });
 
         let map = Map {
-            description: "a",
+            // TODO: fix description or remove it?
+            description: "--",
             minimap: map,
             enterpoints: ent,
             events,
@@ -133,31 +135,10 @@ impl MapCore {
 
     pub fn generate_world(&mut self) {
         let mut m: HashMap<usize, Map> = HashMap::new();
-        m.insert(0, self.generate_map_seed("0", 1, (8, 10), (5, 6), vec!(
-            Event{
-                description: color::paint_text(Box::new(color::Yellow{}), "There's a coin here"),
-                monster: Some(
-                    Monster::new(Box::new(Goblin{}),
-                    1
-                )),
-            },
-            Event{
-                description: color::paint_text(Box::new(color::Red{}), "There's a flower here"),
-                monster: Some(
-                    Monster::new(Box::new(Skeleton{}),
-                    1
-                )),
-            },
-            Event{
-                description: color::paint_text(Box::new(color::Gray{}), "There's a sword here"),
-                monster: Some(
-                    Monster::new(Box::new(Ogre{}),
-                    1
-                )),
-            }
-        )));
-        m.insert(1, self.generate_map_seed("1", 0, (30, 40), (5, 6), vec!()));
-        m.insert(2, self.generate_map_seed("2", 0, (50, 80), (5, 6), vec!()));
+        let mut monster_factory = MonsterFactory::new(self.rng);
+        m.insert(0, self.generate_map_seed("0", 1, (8, 10), (5, 6), monster_factory.generate(0)));
+        m.insert(1, self.generate_map_seed("1", 0, (30, 40), (5, 6), None));
+        m.insert(2, self.generate_map_seed("2", 0, (50, 80), (5, 6), None));
 
         self.world = m;
     }
@@ -208,7 +189,6 @@ impl MapCore {
                     None => panic!("No map match with the key {} - ", index),
                 }
                 if index < map_index {
-                    println!("{}{}???", index, map_index);
                     match next_map.enterpoints.get(&map_index) {
                         Some(map_points) => {
                             return self.point(map_index, map_points.0, map_points.1);
@@ -216,7 +196,6 @@ impl MapCore {
                         None => panic!("No enterpoint {} found at map #{}", map_index, index),
                     }
                 } else {
-                    println!("{}{}!!!", index, map_index);
                     match next_map.exits.get(&index) {
                         Some(map_points) => {
                             return self.point(map_index, map_points.0, map_points.1);
@@ -233,8 +212,6 @@ impl MapCore {
                             println!("{:?}", event);
                         }
 
-                        println!("{}", event.description);
-
                         if let Some(mut m) = event.monster.clone() {
                             if m.vital_points.life <= 0 {
                                 println!("You see a dead {}", m.description);
@@ -244,27 +221,15 @@ impl MapCore {
                         }
 
                     },
-                    // Let's get a random one :D
+                    // Let's get the random one :D
                     None => {
                         let interactions = map.events.get(position);
                         match interactions {
                             Some(i) => {
-                                let mut interaction_random_range: usize;
-                                interaction_random_range = self.rng.gen_range(0, i.len());
+                                self.event_point.insert((index, x, y), i.clone());
+                                let monster = i.monster.clone();
 
-                                if self.is_debug {
-                                    println!("FIRST TIME!");
-                                    // TO DEBUG purposes in this early stage 
-                                    // interaction_random_range = 2;
-                                }
-
-                                let interaction_temp = i[interaction_random_range].clone();
-                                self.event_point.insert((index, x, y), interaction_temp);
-                                let event = &i[interaction_random_range];
-                                let monster = event.monster.clone();
-
-                                println!("{}", event.description);
-
+                                // TODO: Add other events here!
                                 if let Some(mut m) = monster {
                                     is_player_alive = self.prepare_arena(&mut m);
                                     
@@ -274,7 +239,6 @@ impl MapCore {
 
                                     if is_player_alive {
                                         self.event_point.insert((index, x, y), Event{
-                                            description: event.description.clone(),
                                             monster: Option::from(m)
                                         });
                                     }
