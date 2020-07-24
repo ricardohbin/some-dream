@@ -9,6 +9,7 @@ pub mod player;
 pub mod attributes;
 pub mod monster;
 pub mod arena;
+pub mod encounter;
 
 pub mod color;
 mod onboarding;
@@ -89,6 +90,7 @@ impl SomeDreamApplication {
             minimap = color::paint(Box::new(color::Gray{}), "#", minimap.as_str());
             minimap = color::paint(Box::new(color::Green{}), ".", minimap.as_str());
             minimap = color::paint(Box::new(color::Yellow{}), "?", minimap.as_str());
+            minimap = color::paint(Box::new(color::Blue{}), "X", minimap.as_str());
 
             println!("{}\n\n{}", minimap, description);
 

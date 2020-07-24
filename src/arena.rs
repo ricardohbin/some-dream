@@ -1,7 +1,10 @@
+use rand::Rng;
 use rand::rngs::ThreadRng;
+
 use super::interaction;
 use super::player::*;
 use super::monster::*;
+use super::encounter::*;
 use super::render;
 
 #[derive(Debug, Clone)]
@@ -76,6 +79,57 @@ impl Arena {
             },
             "nothing" => {
                 true
+            }
+            _ => {
+                panic!("What?");
+            }
+        }
+    }
+
+    // TODO: remove this from arena module!!
+    pub fn handle_encounter(&mut self, player: &mut Player, encounter: &mut Encounter) {
+        if encounter.is_used {
+            println!("You found an {}\n", encounter.used_description);
+            return;
+        }
+
+        println!("You found an {}\n", encounter.description);
+        let kind = &encounter.kind;
+        let action;
+
+        match kind {
+            Kind::Potion => {
+                action = "drink"
+            },
+            Kind::Sword => {
+                action = "pick"
+            }
+        }
+
+        let input: String = interaction::capture_input("What you will do?", "", "You choosed", vec!(
+            // TODO: actions to enum 
+            action.to_string(),
+            String::from("nothing")
+        ));
+
+        println!("{}", input);
+
+        match input.as_str() {
+            "drink" => {
+                if encounter.can_be_evil {
+                    let rand = self.rng.gen_range(0, 2);
+                    if rand == 0 {
+                        println!("Ouch, something goes wrong!");
+                        player.vital_points.life -= 5;
+                    } else {
+                        println!("Yeah... you feel better");
+                        player.vital_points.life += 5;
+                    }
+                }
+                encounter.is_used = true;
+            },
+            "nothing" => {
+                
             }
             _ => {
                 panic!("What?");
