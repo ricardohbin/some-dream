@@ -4,7 +4,7 @@ use rand::rngs::ThreadRng;
 use super::player::*;
 use super::monster::*;
 use super::arena;
-use super::encounter::*;
+use super::itens::*;
 
 const PLAYER: &str = "\u{001b}[38;5;51m@\u{001b}[0m";
 
@@ -181,9 +181,9 @@ impl MapCore {
         arena.prepare(&mut self.player, m)
     }
 
-    fn prepare_encounter(&mut self, e: &mut Encounter) {
+    fn found_item(&mut self, e: &mut Encounter) {
         let mut arena = arena::Arena::new(self.rng, self.is_debug);
-        arena.handle_encounter(&mut self.player, e);
+        arena.found_item(&mut self.player, e);
     }
 
     pub fn point(&mut self, index: usize, x: usize, y: usize) -> MapOptions {
@@ -257,7 +257,7 @@ impl MapCore {
                                 is_player_alive = self.prepare_arena(&mut m);
                             }
                         } else if let Some(mut e) = event.encounter.clone() {
-                            self.prepare_encounter(&mut e);
+                            self.found_item(&mut e);
                         }
 
                     },
@@ -284,7 +284,7 @@ impl MapCore {
                                         });
                                     }
                                 } else if let Some(mut e) = encounter {
-                                    self.prepare_encounter(&mut e);
+                                    self.found_item(&mut e);
                                     // Override encounter state
                                     self.event_point.insert((index, x, y), Event{
                                         monster: None,

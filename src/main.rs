@@ -9,7 +9,7 @@ pub mod player;
 pub mod attributes;
 pub mod monster;
 pub mod arena;
-pub mod encounter;
+pub mod itens;
 
 pub mod color;
 mod onboarding;
@@ -53,7 +53,8 @@ impl SomeDreamApplication {
                     luck: 6,
                     cardio: 6,
                     social: 6,
-                }
+                },
+                weapon: itens::Kind::Weapon,
             }
         } else {
             let mut prompt = onboarding::Onboarding::init(

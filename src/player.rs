@@ -1,5 +1,6 @@
 use strum_macros::{EnumString, Display};
 use super::attributes::{Stats, VitalPoints};
+use super::itens::{Kind};
 
 #[derive(Debug, Clone)]
 pub struct Player {
@@ -7,7 +8,8 @@ pub struct Player {
     pub role: Role,
     pub profile: Profile,
     pub stats: Stats,
-    pub vital_points: VitalPoints
+    pub vital_points: VitalPoints,
+    pub weapon: Kind,
 }
 
 impl Player {

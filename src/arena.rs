@@ -4,7 +4,7 @@ use rand::rngs::ThreadRng;
 use super::interaction;
 use super::player::*;
 use super::monster::*;
-use super::encounter::*;
+use super::itens::*;
 use super::render;
 
 #[derive(Debug, Clone)]
@@ -87,7 +87,7 @@ impl Arena {
     }
 
     // TODO: remove this from arena module!!
-    pub fn handle_encounter(&mut self, player: &mut Player, encounter: &mut Encounter) {
+    pub fn found_item(&mut self, player: &mut Player, encounter: &mut Encounter) {
         if encounter.is_used {
             println!("You found an {}\n", encounter.used_description);
             return;
@@ -101,7 +101,7 @@ impl Arena {
             Kind::Potion => {
                 action = "drink"
             },
-            Kind::Sword => {
+            Kind::Weapon => {
                 action = "pick"
             }
         }

@@ -6,7 +6,7 @@ use super::color;
 
 #[derive(Debug, Clone)]
 pub enum Kind {
-    Sword,
+    Weapon,
     Potion
 }
 
@@ -17,7 +17,6 @@ pub struct Encounter {
     pub used_description: String,
     pub kind: Kind,
     pub is_used: bool,
-
 }
 
 #[derive(Debug, Clone)]
@@ -34,6 +33,13 @@ impl EncounterFactory {
                 description: color::paint_text(Box::new(color::Red{}), "A misterious red potion"),
                 used_description: color::paint_text(Box::new(color::Gray{}), "An empty potion"),
                 kind: Kind::Potion,
+                is_used: false
+            },
+            Encounter {
+                can_be_evil: true,
+                description: color::paint_text(Box::new(color::Gray{}), "A shining long sword"),
+                used_description: color::paint_text(Box::new(color::Gray{}), "A shining long sword"),
+                kind: Kind::Weapon,
                 is_used: false
             }
         );
