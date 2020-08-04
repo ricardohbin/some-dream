@@ -1,11 +1,10 @@
 Some dream
 ===
-This is a very personal project. In the 90's late years, I loved to play MUD's online and create RPG rules and systems - and the possibility 
-in the future to create a kind of this game is my principal inspiration to one day become a profissional developer.
+This is a very personal project. In the 90's late years, I loved to play MUD's online, roguelike games and create RPG rules and systems - and the possibility in the future to create a kind of this game is my principal inspiration to one day become a profissional developer.
 
 After a lot of years in the industry and in quarantine it is time to make it happens (finally)
 
-This RPG system and the game design are building from scratch - and in a hacking and experimental way - no professional "good practices" at all.
+This RPG system and the all the game design are building from scratch - and in a hacking and experimental way - no professional "good practices" at all.
 
 ## Manifest
 
@@ -15,6 +14,10 @@ This RPG system and the game design are building from scratch - and in a hacking
 - Doing the job first. Separation of concerns, tests and other kind of things later.
 - Free style push to master ftw
 - The main target is to have fun at all
+
+## Reference about roguelikes
+
+[Berlin Interpretation](http://www.roguebasin.com/index.php?title=Berlin_Interpretation)
 
 
 ## How to run
