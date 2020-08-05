@@ -32,7 +32,7 @@ pub struct Map {
 // TODO: CHANGE THIS
 pub struct Event {
     monster: Option<Monster>,
-    encounter: Option<Encounter>
+    encounter: Option<Item>
 }
 
 #[derive(Debug, Clone)]
@@ -64,7 +64,7 @@ impl MapCore {
         range_x: (usize, usize),
         range_y: (usize, usize),
         monster: Option<Monster>,
-        encounter: Option<Encounter>
+        encounter: Option<Item>
     ) -> Map {
         let width = self.rng.gen_range(range_x.0, range_x.1);
         let height = self.rng.gen_range(range_y.0, range_y.1);
@@ -160,7 +160,7 @@ impl MapCore {
     pub fn generate_world(&mut self) {
         let mut m: HashMap<usize, Map> = HashMap::new();
         let mut monster_factory = MonsterFactory::new(self.rng);
-        let mut encounter_factory = EncounterFactory::new(self.rng);
+        let mut encounter_factory = ItemFactory::new(self.rng);
         // TODO: Remove this explict Option::from
         m.insert(0, self.generate_map_seed(
             "0", (15, 20), (5, 6), monster_factory.generate(0), Option::from(encounter_factory.get_one()))
@@ -181,7 +181,7 @@ impl MapCore {
         arena.prepare(&mut self.player, m)
     }
 
-    fn found_item(&mut self, e: &mut Encounter) {
+    fn found_item(&mut self, e: &mut Item) {
         let mut arena = arena::Arena::new(self.rng, self.is_debug);
         arena.found_item(&mut self.player, e);
     }

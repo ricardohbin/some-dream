@@ -87,7 +87,7 @@ impl Arena {
     }
 
     // TODO: remove this from arena module!!
-    pub fn found_item(&mut self, player: &mut Player, encounter: &mut Encounter) {
+    pub fn found_item(&mut self, player: &mut Player, encounter: &mut Item) {
         if encounter.is_used {
             println!("You found an {}\n", encounter.used_description);
             return;
