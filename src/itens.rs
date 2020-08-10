@@ -10,49 +10,57 @@ pub enum Kind {
     Potion
 }
 
-pub trait WeaponType {
-    fn new(power: i8) -> Self;
+trait WeaponType: WeaponTypeClone {
     fn attack(&self, stats: Stats) -> (i8, DamageType);
 }
 
-impl WeaponType for Sword {
-    fn new(power: i8) -> Self {
-        Self {
-            power,
-            damage_type: DamageType::Slash
-        }
+trait WeaponTypeClone {
+    fn clone_box(&self) -> Box<dyn WeaponType>;
+}
+
+impl<T> WeaponTypeClone for T
+	where T: 'static + WeaponType + Clone
+{
+	fn clone_box(&self) -> Box<dyn WeaponType> {
+		Box::new(self.clone())
+	}
+}
+
+// Explict Clone trait to Box<dyn WeaponType>
+impl Clone for Box<dyn WeaponType> {
+	fn clone(&self) -> Box<dyn WeaponType> {
+        let x = self.clone_box();
+        return x;
+	}
+}
+
+// Explict Debug trait to Box<dyn WeaponType> - Not working propertly
+impl std::fmt::Debug for Box<dyn WeaponType> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "-")
     }
+}
+
+impl WeaponType for Sword {
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + (stats.strength + stats.agility / 2), self.damage_type)
     }
 }
 
 impl WeaponType for Mace {
-    fn new(power: i8) -> Self {
-        Self {
-            power,
-            damage_type: DamageType::Bash
-        }
-    }
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + stats.strength, self.damage_type)
     }
 }
 
 impl WeaponType for Lance {
-    fn new(power: i8) -> Self {
-        Self {
-            power,
-            damage_type: DamageType::Bash
-        }
-    }
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + stats.agility, self.damage_type)
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum DamageType {
+pub enum DamageType {   
     Bash,
     Piercing,
     Slash,
@@ -83,7 +91,7 @@ pub struct Item {
     pub used_description: String,
     pub kind: Kind,
     pub is_used: bool,
-    sword: Option<Sword>,
+    weapon: Box<dyn WeaponType>
 }
 
 #[derive(Debug, Clone)]
@@ -101,16 +109,11 @@ impl ItemFactory {
                 used_description: color::paint_text(Box::new(color::Gray{}), "An empty potion"),
                 kind: Kind::Potion,
                 is_used: false,
-                sword: None
+                weapon: Box::new(Sword {
+                        power: 10,
+                        damage_type: DamageType::Slash
+                })
             },
-            Item {
-                can_be_evil: true,
-                description: color::paint_text(Box::new(color::Gray{}), "A shining long sword"),
-                used_description: color::paint_text(Box::new(color::Gray{}), "A shining long sword"),
-                kind: Kind::Weapon,
-                is_used: false,
-                sword: Option::from(Sword::new(10))
-            }
         );
 
         Self {
