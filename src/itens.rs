@@ -10,11 +10,11 @@ pub enum Kind {
     Potion
 }
 
-trait WeaponType: WeaponTypeClone {
+pub trait WeaponType: WeaponTypeClone {
     fn attack(&self, stats: Stats) -> (i8, DamageType);
 }
 
-trait WeaponTypeClone {
+pub trait WeaponTypeClone {
     fn clone_box(&self) -> Box<dyn WeaponType>;
 }
 
@@ -29,8 +29,7 @@ impl<T> WeaponTypeClone for T
 // Explict Clone trait to Box<dyn WeaponType>
 impl Clone for Box<dyn WeaponType> {
 	fn clone(&self) -> Box<dyn WeaponType> {
-        let x = self.clone_box();
-        return x;
+        self.clone_box()
 	}
 }
 
@@ -91,7 +90,7 @@ pub struct Item {
     pub used_description: String,
     pub kind: Kind,
     pub is_used: bool,
-    weapon: Box<dyn WeaponType>
+    pub weapon: Option<Box<dyn WeaponType>>
 }
 
 #[derive(Debug, Clone)]
@@ -109,10 +108,18 @@ impl ItemFactory {
                 used_description: color::paint_text(Box::new(color::Gray{}), "An empty potion"),
                 kind: Kind::Potion,
                 is_used: false,
-                weapon: Box::new(Sword {
+                weapon: None
+            },
+            Item {
+                can_be_evil: false,
+                description: color::paint_text(Box::new(color::Gray{}), "A shining sword in a case"),
+                used_description: color::paint_text(Box::new(color::Gray{}), "An empty case"),
+                kind: Kind::Weapon,
+                is_used: false,
+                weapon: Some(Box::new(Sword {
                         power: 10,
                         damage_type: DamageType::Slash
-                })
+                }))
             },
         );
 

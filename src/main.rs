@@ -54,7 +54,7 @@ impl SomeDreamApplication {
                     cardio: 6,
                     social: 6,
                 },
-                weapon: itens::Kind::Weapon,
+                weapon: None,
             }
         } else {
             let mut prompt = onboarding::Onboarding::init(

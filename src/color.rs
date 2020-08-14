@@ -1,3 +1,5 @@
+// @see https://en.wikipedia.org/wiki/ANSI_escape_code
+
 pub struct Orange {}
 pub struct Red {}
 pub struct Blue {}
@@ -5,6 +7,7 @@ pub struct Purple {}
 pub struct Green {}
 pub struct Gray {}
 pub struct Yellow {}
+pub struct Brown {}
 
 pub trait Color {
     fn pattern(&self) -> &'static str;
@@ -49,6 +52,12 @@ impl Color for Gray {
 impl Color for Yellow {
     fn pattern(&self) -> &'static str {
         "\u{001b}[38;5;226m_\u{001b}[0m"
+    }
+}
+
+impl Color for Brown {
+    fn pattern(&self) -> &'static str {
+        "\u{001b}[38;5;58m_\u{001b}[0m"
     }
 }
 

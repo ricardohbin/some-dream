@@ -1,6 +1,6 @@
 use strum_macros::{EnumString, Display};
 use super::attributes::{Stats, VitalPoints};
-use super::itens::{Kind};
+use super::itens::{WeaponType};
 
 #[derive(Debug, Clone)]
 pub struct Player {
@@ -9,7 +9,7 @@ pub struct Player {
     pub profile: Profile,
     pub stats: Stats,
     pub vital_points: VitalPoints,
-    pub weapon: Kind,
+    pub weapon: Option<Box<dyn WeaponType>>,
 }
 
 impl Player {

@@ -6,7 +6,6 @@ use super::player::*;
 use super::interaction;
 use super::render;
 use super::attributes::{Stats, VitalPoints};
-use super::itens::{Kind};
 
 // used implictly by strum...
 use std::str::FromStr;
@@ -340,15 +339,13 @@ impl Onboarding {
 
         let vital_points: VitalPoints = self.calculate_vital_points(stats);
 
-        let item = Kind::Weapon;
-
         let player = Player {
             name,
             role,
             profile,
             stats,
             vital_points,
-            weapon: item
+            weapon: None
         };
 
         render::render_attributes(&player);

@@ -161,9 +161,8 @@ impl MapCore {
         let mut m: HashMap<usize, Map> = HashMap::new();
         let mut monster_factory = MonsterFactory::new(self.rng);
         let mut encounter_factory = ItemFactory::new(self.rng);
-        // TODO: Remove this explict Option::from
         m.insert(0, self.generate_map_seed(
-            "0", (15, 20), (5, 6), monster_factory.generate(0), Option::from(encounter_factory.get_one()))
+            "0", (15, 20), (5, 6), monster_factory.generate(0), Some(encounter_factory.get_one()))
         );
         m.insert(1, self.generate_map_seed(
             "1", (30, 40), (5, 6), None, None)
@@ -279,7 +278,7 @@ impl MapCore {
                                     // TODO: escape using skills, etc
                                     if is_player_alive {
                                         self.event_point.insert((index, x, y), Event{
-                                            monster: Option::from(m),
+                                            monster: Some(m),
                                             encounter: None,
                                         });
                                     }
@@ -288,7 +287,7 @@ impl MapCore {
                                     // Override encounter state
                                     self.event_point.insert((index, x, y), Event{
                                         monster: None,
-                                        encounter: Option::from(e),
+                                        encounter: Some(e),
                                     });
                                 }                         
                             },

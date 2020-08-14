@@ -128,6 +128,11 @@ impl Arena {
                 }
                 encounter.is_used = true;
             },
+            "pick" => {
+                player.weapon = encounter.weapon.clone();
+                println!("You get a nice {}", encounter.description);
+                encounter.is_used = true;
+            }
             "nothing" => {
                 
             }
