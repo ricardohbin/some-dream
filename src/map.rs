@@ -160,9 +160,9 @@ impl MapCore {
     pub fn generate_world(&mut self) {
         let mut m: HashMap<usize, Map> = HashMap::new();
         let mut monster_factory = MonsterFactory::new(self.rng);
-        let mut encounter_factory = ItemFactory::new(self.rng);
+        let mut encounter_factory = ItemFactory::new(&mut self.rng);
         m.insert(0, self.generate_map_seed(
-            "0", (15, 20), (5, 6), monster_factory.generate(0), Some(encounter_factory.get_one()))
+            "0", (10, 11), (5, 6), monster_factory.generate(0), Some(encounter_factory.get_one()))
         );
         m.insert(1, self.generate_map_seed(
             "1", (30, 40), (5, 6), None, None)

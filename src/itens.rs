@@ -12,6 +12,7 @@ pub enum Kind {
 
 pub trait WeaponType: WeaponTypeClone {
     fn attack(&self, stats: Stats) -> (i8, DamageType);
+    fn show_power(&self) -> i8;
 }
 
 pub trait WeaponTypeClone {
@@ -33,10 +34,10 @@ impl Clone for Box<dyn WeaponType> {
 	}
 }
 
-// Explict Debug trait to Box<dyn WeaponType> - Not working propertly
+// Explict Debug trait to Box<dyn WeaponType>
 impl std::fmt::Debug for Box<dyn WeaponType> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "-")
+        write!(f, "power: {}", self.show_power())
     }
 }
 
@@ -44,17 +45,26 @@ impl WeaponType for Sword {
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + (stats.strength + stats.agility / 2), self.damage_type)
     }
+    fn show_power(&self) -> i8 {
+        self.power
+    }
 }
 
 impl WeaponType for Mace {
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + stats.strength, self.damage_type)
     }
+    fn show_power(&self) -> i8 {
+        self.power
+    }
 }
 
 impl WeaponType for Lance {
     fn attack(&self, stats: Stats) -> (i8, DamageType) {
         (self.power + stats.agility, self.damage_type)
+    }
+    fn show_power(&self) -> i8 {
+        self.power
     }
 }
 
@@ -67,20 +77,20 @@ pub enum DamageType {
 
 #[derive(Debug, Clone)]
 struct Sword {
-    power: i8,
-    damage_type: DamageType,
+    pub power: i8,
+    pub damage_type: DamageType,
 }
 
 #[derive(Debug, Clone)]
 struct Mace {
-    power: i8,
-    damage_type: DamageType,
+    pub power: i8,
+    pub damage_type: DamageType,
 }
 
 #[derive(Debug, Clone)]
 struct Lance {
-    power: i8,
-    damage_type: DamageType,
+    pub power: i8,
+    pub damage_type: DamageType,
 }
 
 #[derive(Debug, Clone)]
@@ -99,8 +109,29 @@ pub struct ItemFactory {
     encounters: Vec<Item>,
 }
 
+fn create_generic_sword(power: i8) -> Sword {
+    Sword {
+        power,
+        damage_type: DamageType::Slash
+    }
+}
+
+fn create_generic_lance(power: i8) -> Lance {
+    Lance {
+        power,
+        damage_type: DamageType::Piercing
+    }
+}
+
+fn create_generic_mace(power: i8) -> Mace {
+    Mace {
+        power,
+        damage_type: DamageType::Bash
+    }
+}
+
 impl ItemFactory {
-    pub fn new(rng: ThreadRng) ->  Self {
+    pub fn new(rng: &mut ThreadRng) ->  Self {
         let encounters = vec!(
             Item {
                 can_be_evil: true,
@@ -112,19 +143,32 @@ impl ItemFactory {
             },
             Item {
                 can_be_evil: false,
-                description: color::paint_text(Box::new(color::Gray{}), "A shining sword in a case"),
+                description: color::paint_text(Box::new(color::Gray{}), "A rust short sword"),
                 used_description: color::paint_text(Box::new(color::Gray{}), "An empty case"),
                 kind: Kind::Weapon,
                 is_used: false,
-                weapon: Some(Box::new(Sword {
-                        power: 10,
-                        damage_type: DamageType::Slash
-                }))
+                weapon: Some(Box::new(create_generic_sword(rng.gen_range(3, 5))))
+            },
+            Item {
+                can_be_evil: false,
+                description: color::paint_text(Box::new(color::Gray{}), "A rust lance"),
+                used_description: color::paint_text(Box::new(color::Gray{}), "An empty case"),
+                kind: Kind::Weapon,
+                is_used: false,
+                weapon: Some(Box::new(create_generic_lance(rng.gen_range(3, 5))))
+            },
+            Item {
+                can_be_evil: false,
+                description: color::paint_text(Box::new(color::Gray{}), "A rust mace"),
+                used_description: color::paint_text(Box::new(color::Gray{}), "An empty case"),
+                kind: Kind::Weapon,
+                is_used: false,
+                weapon: Some(Box::new(create_generic_mace(rng.gen_range(3, 5))))
             },
         );
 
         Self {
-            rng,
+            rng: *rng,
             encounters
         }
     }

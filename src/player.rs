@@ -14,7 +14,12 @@ pub struct Player {
 
 impl Player {
     pub fn attack(&self) -> i8 {
-        self.stats.strength
+        match &self.weapon {
+            None => self.stats.strength,
+            Some(w) => {
+                w.attack(self.stats).0
+            }
+        }
     }
 }
 

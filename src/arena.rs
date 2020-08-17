@@ -22,11 +22,13 @@ impl Arena {
     }
 
     fn fight(&self, player: &mut Player, monster: &mut Monster, is_player_action: bool) -> bool {
+        if self.is_debug {
+            println!("Monster {:?}\n", monster);
+            println!("Player {:?}\n", player);
+        }
+
         if monster.vital_points.life <= 0 {
             println!("The monster is dead!");
-            if self.is_debug {
-                println!("{:?}", monster);
-            }
             return true;
         }
     
@@ -40,11 +42,11 @@ impl Arena {
             println!("You turn!");
             let input: String = interaction::capture_input("What attack will you perform?", "", "You choosed", vec!(
                 // TODO: actions to enum by class
-                String::from("bash"),
+                String::from("attack"),
             ));
         
             match input.as_str() {
-                "bash" => {
+                "attack" => {
                     let hit = player.attack();
                     monster.vital_points.life -= hit;
                     self.fight(player, monster, !is_player_action)
@@ -88,6 +90,10 @@ impl Arena {
 
     // TODO: remove this from arena module!!
     pub fn found_item(&mut self, player: &mut Player, encounter: &mut Item) {
+        if self.is_debug {
+            println!("Player {:?}\n", player);
+        }
+
         if encounter.is_used {
             println!("You found an {}\n", encounter.used_description);
             return;
