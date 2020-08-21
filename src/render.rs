@@ -21,6 +21,7 @@ fn render_block(text: String, pattern: String) -> String {
         text,
         String::from(" "),
         pattern.repeat(right_padding),
+        String::from("\n")
     ].concat()
 }
 
@@ -48,6 +49,12 @@ pub fn render_attributes(player: &Player) {
     output.push(render_block(format!(
     "Life: {} | Luck: {} | Cardio: {} | Social: {}",
     player.vital_points.life, player.vital_points.luck, player.vital_points.cardio, player.vital_points.social
+    ), String::from(" ")));
+
+    output.push(render_block(String::from("Equipment"), String::from("=")));
+
+    output.push(render_block(format!(
+        "Weapon: {}", player.weapon
     ), String::from(" ")));
 
     print!("{}", output.join("\n"));

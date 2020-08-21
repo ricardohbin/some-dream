@@ -73,7 +73,7 @@ impl MonsterType for Skeleton {
                 resistence: 2,
             },
             VitalPoints{
-                life: 3,
+                life: 4,
                 luck: 0,
                 cardio: 4,
                 social: 0,
@@ -99,7 +99,7 @@ impl MonsterType for Goblin {
                 resistence: 3,
             },
             VitalPoints{
-                life: 2,
+                life: 6,
                 luck: 1,
                 cardio: 3,
                 social: 0,

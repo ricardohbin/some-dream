@@ -8,6 +8,13 @@ fn give_feedback(phrase: &str, value: String) -> String {
     value
 }
 
+// TODO: commands module
+fn general_commands() -> Vec<String> {
+    vec!(
+        String::from("stats")
+    )
+}
+
 pub fn capture_input(
     before_input_phrase: &str,
     after_input_phrase: &str,
@@ -26,6 +33,10 @@ pub fn capture_input(
     }
 
     let value: String = read!();
+
+    if general_commands().contains(&value) {
+        return value;
+    }
 
     if has_options && !options.contains(&value) {
         println!("Your option {} doesn't exists in the list {:?}. try again.", value, options);

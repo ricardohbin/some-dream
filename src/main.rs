@@ -54,7 +54,7 @@ impl SomeDreamApplication {
                     cardio: 6,
                     social: 6,
                 },
-                weapon: None,
+                weapon: itens::basic_weapon(),
             }
         } else {
             let mut prompt = onboarding::Onboarding::init(
@@ -67,9 +67,6 @@ impl SomeDreamApplication {
         render::render_image_to_ansi("./src/art/fighter.gif");
 
         println!("It's you! Nice shape ahn? Let's begin finally....\n");
-
-        // The player is borrowed to mapcore until the end of program. Let's keep a copy here in this scope
-        let player_name = player.name.clone();
 
         let mut map_core = map::MapCore::new(self.rng, player, self.is_debug_mode);
 
@@ -94,6 +91,7 @@ impl SomeDreamApplication {
             minimap = color::paint(Box::new(color::Blue{}), "X", minimap.as_str());
 
             println!("{}\n\n{}", minimap, description);
+            render::render_mini_stats(map_core.player.vital_points);
 
             //resync in possible repaint of map
             x = map_options.x;
@@ -103,13 +101,14 @@ impl SomeDreamApplication {
             println!("{:?}", map_options.is_player_alive);
 
             if !map_options.is_player_alive {
-                println!("Your journey ends here. Sorry {}", player_name);
+                println!("Your journey ends here. Sorry {}", map_core.player.name);
                 return;
             }
 
-            let direction: String = interaction::capture_input("What path you go?", "", "You choose", map_options.directions);
+            let option: String = interaction::capture_input("What path you go?", "", "You choose", map_options.directions);
 
-            match direction.as_str() {
+            match option.as_str() {
+                "stats" => render::render_attributes(&map_core.player),
                 "n" => y -= 1,
                 "s" => y += 1,
                 "e" => x -= 1,

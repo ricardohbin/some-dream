@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use super::player::*;
 use super::interaction;
 use super::render;
+use super::itens;
 use super::attributes::{Stats, VitalPoints};
 
 // used implictly by strum...
@@ -345,7 +346,7 @@ impl Onboarding {
             profile,
             stats,
             vital_points,
-            weapon: None
+            weapon: itens::basic_weapon()
         };
 
         render::render_attributes(&player);

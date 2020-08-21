@@ -2,6 +2,13 @@ use strum_macros::{EnumString, Display};
 use super::attributes::{Stats, VitalPoints};
 use super::itens::{WeaponType};
 
+
+#[derive(Debug, Clone)]
+pub struct Weapon {
+    description: String,
+
+}
+
 #[derive(Debug, Clone)]
 pub struct Player {
     pub name: String,
@@ -9,17 +16,12 @@ pub struct Player {
     pub profile: Profile,
     pub stats: Stats,
     pub vital_points: VitalPoints,
-    pub weapon: Option<Box<dyn WeaponType>>,
+    pub weapon: Box<dyn WeaponType>,
 }
 
 impl Player {
     pub fn attack(&self) -> i8 {
-        match &self.weapon {
-            None => self.stats.strength,
-            Some(w) => {
-                w.attack(self.stats).0
-            }
-        }
+        self.weapon.attack(self.stats).0
     }
 }
 
