@@ -70,21 +70,34 @@ impl MapCore {
         let height = self.rng.gen_range(range_y.0, range_y.1);
         let mut map = String::from("");
 
-        let mut total_points = (width - 2) * (height - 2);
         //Length os 1 fixed encounter + 1 fixed monster slot for now
-        let mut possible_points = 2;
         let uindex: usize = index.parse().unwrap();
         let mut ent: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut exits: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut events = HashMap::new();
         // TODO: improve this later
-        let mut is_monster_placed = false;
+
+        let possible_positions = (width - 1, height - 1);
+
+        let initial_position = (1, 1);
+        let mut monster_position = initial_position;
+        let mut encounter_position = initial_position;
+
+        //TODO: more elegant way to do this - stress more the positions
+        //TODO: recursive call to multiple points?
+        while monster_position == initial_position {
+            monster_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
+            encounter_position = monster_position;
+        }
+
+        while encounter_position == monster_position || encounter_position == initial_position {
+            encounter_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
+        }
+
+        println!("{:?} - {:?}", monster_position, encounter_position);
 
         for _y in 0..height {
             for _x in 0..width {
-                // First place that player enter in map - no encounters here
-                let is_entrypoint_slot = _x == 1 && _y == 1;
-
                 if _x == 0 && _y == 1 {
                     if uindex > 0 {
                         map.push_str((uindex - 1).to_string().as_str());
@@ -112,16 +125,11 @@ impl MapCore {
                     continue;
                 }
 
-                if !is_entrypoint_slot && total_points == 0 || (self.rng.gen_range(0, total_points + 1) == 0 && possible_points > 0) {
-                    if !is_monster_placed {
-                        map.push_str("?");
-                        is_monster_placed = true
-                    } else {
-                        map.push_str("X")
-                    }
-                    possible_points -= 1;
+                if monster_position.0 == _x && monster_position.1 == _y {
+                    map.push_str("?");
+                } else if encounter_position.0 == _x && encounter_position.1 == _y {
+                    map.push_str("X");
                 } else {
-                    total_points -= 1;
                     map.push_str(".");
                 }
             }
@@ -130,7 +138,6 @@ impl MapCore {
 
 
         // TODO: more dynamic plzzz
-
         events.insert("?".to_string(), Event {
             monster,
             encounter: None
@@ -162,7 +169,7 @@ impl MapCore {
         let mut monster_factory = MonsterFactory::new(self.rng);
         let mut encounter_factory = ItemFactory::new(&mut self.rng);
         m.insert(0, self.generate_map_seed(
-            "0", (10, 11), (5, 6), monster_factory.generate(0), Some(encounter_factory.get_one()))
+            "0", (14, 25), (14, 25), monster_factory.generate(0), Some(encounter_factory.get_one()))
         );
         m.insert(1, self.generate_map_seed(
             "1", (30, 40), (5, 6), None, None)
