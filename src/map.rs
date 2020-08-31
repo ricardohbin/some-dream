@@ -11,7 +11,6 @@ const PLAYER: &str = "\u{001b}[38;5;51m@\u{001b}[0m";
 #[derive(Debug)]
 pub struct MapOptions {
     pub minimap: String,
-    pub description: String,
     pub directions: Vec<String>,
     pub x: usize,
     pub y: usize,
@@ -23,7 +22,6 @@ pub struct MapOptions {
 pub struct Map {
     enterpoints: HashMap<usize, (usize, usize)>,
     exits: HashMap<usize, (usize, usize)>,
-    description: &'static str,
     minimap: String,
     events: HashMap<String, Event>,
 }
@@ -59,6 +57,16 @@ impl MapCore {
         }
     }
 
+    fn generate_position(&mut self, possible_positions: (usize, usize), used_positons: Vec<(usize, usize)>) -> (usize, usize) {
+        let new_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
+
+        if used_positons.contains(&new_position) {
+            return self.generate_position(possible_positions, used_positons);
+        }
+
+        new_position
+    }
+
     fn generate_map_seed(
         &mut self, index: &str,
         range_x: (usize, usize),
@@ -75,24 +83,12 @@ impl MapCore {
         let mut ent: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut exits: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut events = HashMap::new();
-        // TODO: improve this later
 
         let possible_positions = (width - 1, height - 1);
 
         let initial_position = (1, 1);
-        let mut monster_position = initial_position;
-        let mut encounter_position = initial_position;
-
-        //TODO: more elegant way to do this - stress more the positions
-        //TODO: recursive call to multiple points?
-        while monster_position == initial_position {
-            monster_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
-            encounter_position = monster_position;
-        }
-
-        while encounter_position == monster_position || encounter_position == initial_position {
-            encounter_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
-        }
+        let monster_position = self.generate_position(possible_positions, vec!(initial_position));
+        let encounter_position = self.generate_position(possible_positions, vec!(initial_position, monster_position));
 
         println!("{:?} - {:?}", monster_position, encounter_position);
 
@@ -149,8 +145,6 @@ impl MapCore {
         });
 
         let map = Map {
-            // TODO: fix description or remove it?
-            description: "--",
             minimap: map,
             enterpoints: ent,
             events,
@@ -169,7 +163,7 @@ impl MapCore {
         let mut monster_factory = MonsterFactory::new(self.rng);
         let mut encounter_factory = ItemFactory::new(&mut self.rng);
         m.insert(0, self.generate_map_seed(
-            "0", (14, 25), (14, 25), monster_factory.generate(0), Some(encounter_factory.get_one()))
+            "0", (14, 20), (4, 5), monster_factory.generate(0), Some(encounter_factory.get_one()))
         );
         m.insert(1, self.generate_map_seed(
             "1", (30, 40), (5, 6), None, None)
@@ -334,7 +328,6 @@ impl MapCore {
 
         MapOptions{
             minimap: new_map,
-            description: map.description.trim().to_string(),
             directions,
             x,
             y,

@@ -80,7 +80,6 @@ impl SomeDreamApplication {
 
         loop {
             let map_options: map::MapOptions = map_core.point(index, x, y);
-            let description = map_options.description;
             let mut minimap = map_options.minimap;
 
             // TODO: Adding custom color in minimap - move this from here later in the map class
@@ -90,7 +89,7 @@ impl SomeDreamApplication {
             minimap = color::paint(Box::new(color::Yellow{}), "?", minimap.as_str());
             minimap = color::paint(Box::new(color::Blue{}), "X", minimap.as_str());
 
-            println!("{}\n\n{}", minimap, description);
+            println!("{}\n\n", minimap);
             render::render_mini_stats(map_core.player.vital_points);
 
             //resync in possible repaint of map
