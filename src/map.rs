@@ -18,12 +18,18 @@ pub struct MapOptions {
     pub is_player_alive: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Position2d {
+    x: usize,
+    y: usize,
+}
+
 #[derive(Debug, Clone)]
 pub struct Map {
     enterpoints: HashMap<usize, (usize, usize)>,
     exits: HashMap<usize, (usize, usize)>,
     minimap: String,
-    events: HashMap<String, Event>,
+    events: HashMap<Position2d, Event>
 }
 
 #[derive(Debug, Clone)]
@@ -36,7 +42,7 @@ pub struct Event {
 #[derive(Debug, Clone)]
 pub struct MapCore {
     rng: ThreadRng,
-    event_point: HashMap<(usize, usize, usize), Event>,
+    event_point: HashMap<(usize, Position2d), Event>,
     pub player: Player,
     is_debug: bool,
     world: HashMap<usize, Map>,
@@ -123,26 +129,22 @@ impl MapCore {
 
                 if monster_position.0 == _x && monster_position.1 == _y {
                     map.push_str("?");
+                    events.insert(Position2d { x: _x, y: _y }, Event {
+                        monster: monster.clone(),
+                        encounter: None
+                    });
                 } else if encounter_position.0 == _x && encounter_position.1 == _y {
                     map.push_str("X");
+                    events.insert(Position2d { x: _x, y: _y }, Event {
+                        monster: None,
+                        encounter: encounter.clone()
+                    });
                 } else {
                     map.push_str(".");
                 }
             }
             map.push_str("\n");
         }
-
-
-        // TODO: more dynamic plzzz
-        events.insert("?".to_string(), Event {
-            monster,
-            encounter: None
-        });
-
-        events.insert("X".to_string(), Event {
-            monster: None,
-            encounter,
-        });
 
         let map = Map {
             minimap: map,
@@ -242,7 +244,7 @@ impl MapCore {
                     }
                 }
             } else {
-                let actual_event_point = self.event_point.get(&(index, x, y));
+                let actual_event_point = self.event_point.get(&(index, Position2d { x, y }));
                 match actual_event_point {
                     Some(event) => {
                         if self.is_debug {
@@ -263,10 +265,14 @@ impl MapCore {
                     },
                     // Let's get the random one :D
                     None => {
-                        let interactions = map.events.get(position);
+                        let interactions = map.events.get(&Position2d {
+                            x, y
+                        });
                         match interactions {
                             Some(i) => {
-                                self.event_point.insert((index, x, y), i.clone());
+                                self.event_point.insert((index, Position2d {
+                                    x, y
+                                }), i.clone());
                                 let monster = i.monster.clone();
                                 let encounter = i.encounter.clone();
 
@@ -278,7 +284,7 @@ impl MapCore {
                                     // for now only fights to DEATH will be allowed
                                     // TODO: escape using skills, etc
                                     if is_player_alive {
-                                        self.event_point.insert((index, x, y), Event{
+                                        self.event_point.insert((index, Position2d { x, y }), Event {
                                             monster: Some(m),
                                             encounter: None,
                                         });
@@ -286,7 +292,7 @@ impl MapCore {
                                 } else if let Some(mut e) = encounter {
                                     self.found_item(&mut e);
                                     // Override encounter state
-                                    self.event_point.insert((index, x, y), Event{
+                                    self.event_point.insert((index, Position2d { x, y }), Event {
                                         monster: None,
                                         encounter: Some(e),
                                     });
