@@ -63,11 +63,13 @@ impl MapCore {
         }
     }
 
-    fn generate_position(&mut self, possible_positions: (usize, usize), used_positons: Vec<(usize, usize)>) -> (usize, usize) {
-        let new_position = (self.rng.gen_range(1, possible_positions.0), self.rng.gen_range(1, possible_positions.1));
+    fn generate_position(&mut self, possible_positions: &Position2d, used_positions: &[Position2d]) -> Position2d {
+        let new_position = Position2d {
+            x: self.rng.gen_range(1, possible_positions.x), y: self.rng.gen_range(1, possible_positions.y)
+        };
 
-        if used_positons.contains(&new_position) {
-            return self.generate_position(possible_positions, used_positons);
+        if used_positions.contains(&new_position) {
+            return self.generate_position(possible_positions, used_positions);
         }
 
         new_position
@@ -77,8 +79,8 @@ impl MapCore {
         &mut self, index: &str,
         range_x: (usize, usize),
         range_y: (usize, usize),
-        monster: Option<Monster>,
-        encounter: Option<Item>
+        monsters: Vec<Monster>,
+        encounters: Vec<Item>,
     ) -> Map {
         let width = self.rng.gen_range(range_x.0, range_x.1);
         let height = self.rng.gen_range(range_y.0, range_y.1);
@@ -90,13 +92,26 @@ impl MapCore {
         let mut exits: HashMap<usize, (usize, usize)>= HashMap::new();
         let mut events = HashMap::new();
 
-        let possible_positions = (width - 1, height - 1);
+        let existing_positions = Position2d{ x: width - 1, y: height - 1 };
+        let init_position = Position2d{ x: 1, y: 1 };
+        let mut used_positions:Vec<Position2d> = vec!(init_position);
+        let mut monster_positions: HashMap<Position2d, Monster> = HashMap::new();
+        let mut encounters_positions: HashMap<Position2d, Item> = HashMap::new();
 
-        let initial_position = (1, 1);
-        let monster_position = self.generate_position(possible_positions, vec!(initial_position));
-        let encounter_position = self.generate_position(possible_positions, vec!(initial_position, monster_position));
+        //TODO: Random monsters/encounters limits but slots 
+        // Checking all possible positions to monsters
+        for i in monsters {
+            let m_position = self.generate_position(&existing_positions, &used_positions);
+            used_positions.push(m_position.clone());
+            monster_positions.insert(m_position.clone(), i);
+        }
 
-        println!("{:?} - {:?}", monster_position, encounter_position);
+        // Checking all possible positions to encounters
+        for i in encounters {
+            let m_position = self.generate_position(&existing_positions, &used_positions);
+            used_positions.push(m_position.clone());
+            encounters_positions.insert(m_position.clone(), i);
+        }
 
         for _y in 0..height {
             for _x in 0..width {
@@ -127,20 +142,34 @@ impl MapCore {
                     continue;
                 }
 
-                if monster_position.0 == _x && monster_position.1 == _y {
-                    map.push_str("?");
-                    events.insert(Position2d { x: _x, y: _y }, Event {
-                        monster: monster.clone(),
-                        encounter: None
-                    });
-                } else if encounter_position.0 == _x && encounter_position.1 == _y {
-                    map.push_str("X");
-                    events.insert(Position2d { x: _x, y: _y }, Event {
-                        monster: None,
-                        encounter: encounter.clone()
-                    });
-                } else {
-                    map.push_str(".");
+                let actual_position = Position2d {
+                    x: _x,
+                    y: _y
+                };
+
+                match monster_positions.get(&actual_position) {
+                    Some(m) => {
+                        map.push_str("?");
+                        events.insert(actual_position, Event {
+                            monster: Some(m.clone()),
+                            encounter: None
+                        });
+                    },
+                    None => {
+                        // Fix this nested match pattern
+                        match encounters_positions.get(&actual_position) {
+                            Some(e) => {
+                                map.push_str("X");
+                                events.insert(actual_position, Event {
+                                    monster: None,
+                                    encounter: Some(e.clone()),
+                                });
+                            },
+                            None => {
+                                map.push_str(".");
+                            }
+                        }
+                    }
                 }
             }
             map.push_str("\n");
@@ -165,13 +194,24 @@ impl MapCore {
         let mut monster_factory = MonsterFactory::new(self.rng);
         let mut encounter_factory = ItemFactory::new(&mut self.rng);
         m.insert(0, self.generate_map_seed(
-            "0", (14, 20), (4, 5), monster_factory.generate(0), Some(encounter_factory.get_one()))
+            "0",
+            (14, 20),
+            (4, 5),
+            vec!(
+                monster_factory.generate(0),
+                monster_factory.generate(0),
+            ),
+            vec!(
+                encounter_factory.get_one(),
+                encounter_factory.get_one(),
+                encounter_factory.get_one()
+            ))
         );
         m.insert(1, self.generate_map_seed(
-            "1", (30, 40), (5, 6), None, None)
+            "1", (30, 40), (5, 6), vec!(), vec!())
         );
         m.insert(2, self.generate_map_seed(
-            "2", (50, 80), (5, 6), None, None)
+            "2", (50, 80), (5, 6), vec!(), vec!())
         );
 
         self.world = m;

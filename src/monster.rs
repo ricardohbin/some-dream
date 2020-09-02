@@ -21,24 +21,25 @@ impl Monster {
 #[derive(Debug, Clone)]
 pub struct MonsterFactory {
     rng: ThreadRng,
-    monsters: HashMap<usize, Vec<Option<Monster>>>,
+    monsters: HashMap<usize, Vec<Monster>>,
 }
 
 impl MonsterFactory {
     pub fn new(rng: ThreadRng) -> Self {
         let mut monsters = HashMap::new();
         // monster possible by area
+
         monsters.insert(0, vec!(
-            Some(Monster::new(Box::new(Goblin{}), 1)),
-            Some(Monster::new(Box::new(Skeleton{}), 1)),
-            Some(Monster::new(Box::new(Ogre{}), 1)),
+            Monster::new(Box::new(Goblin{}), 1),
+            Monster::new(Box::new(Skeleton{}), 1),
+            Monster::new(Box::new(Ogre{}), 1),
         ));
         Self {
             rng,
             monsters
         }
     }
-    pub fn generate(&mut self, level: usize) -> Option<Monster> {
+    pub fn generate(&mut self, level: usize) -> Monster {
         // TODO: safe unwrap
         let monsters = self.monsters.get(&level).unwrap();
         let random = self.rng.gen_range(0, monsters.len());
